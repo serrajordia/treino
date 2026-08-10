@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Treino">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Treino</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1115; --card:#181b22; --card2:#1f232c; --line:#2a2f3a;
+  --txt:#e8eaef; --dim:#9aa3b2; --accent:#4ade80; --accent2:#22d3ee;
+  --warn:#fbbf24; --danger:#f87171; --reab:#c084fc;
+}
+html,body{margin:0;padding:0;overscroll-behavior-y:none}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:16px; line-height:1.45;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  -webkit-text-size-adjust:100%;
+}
+.banner{background:#1c1a12;border:1px solid var(--warn);border-radius:12px;padding:12px;margin-bottom:14px;font-size:13px;color:#d8cfae;line-height:1.5}
+.banner b{color:var(--warn)}
+.banner button{margin-top:9px;width:100%;padding:9px;font-size:13px}
+.foot{text-align:center;color:#575e6c;font-size:11px;margin-top:26px;line-height:1.6}
+.foot button{background:none;border:none;color:#575e6c;font-size:11px;padding:2px 6px;text-decoration:underline}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px 120px}
+h1{font-size:20px;margin:18px 0 4px;letter-spacing:-.3px}
+h2{font-size:16px;margin:22px 0 10px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.sub{color:var(--dim);font-size:13px;margin:0 0 16px}
+button{font-family:inherit;font-size:15px;border:none;border-radius:12px;cursor:pointer;color:var(--txt);background:var(--card2);padding:12px 16px;transition:opacity .15s}
+button:active{opacity:.6}
+button:disabled{opacity:.35}
+.btn-primary{background:var(--accent);color:#062412;font-weight:700}
+.btn-warn{background:var(--warn);color:#3a2600;font-weight:700}
+.btn-danger{background:var(--danger);color:#3a0c0c;font-weight:700}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+
+/* ---- Day picker ---- */
+.days{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.daycard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;text-align:left;display:block;width:100%}
+.daycard.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.daycard .dn{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px}
+.daycard .dt{font-size:15px;font-weight:600;margin-top:3px;line-height:1.25}
+.daycard .dm{font-size:11px;color:var(--dim);margin-top:5px}
+.badge-today{display:inline-block;background:var(--accent);color:#062412;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:middle;letter-spacing:.5px}
+
+/* ---- Timer bar ---- */
+.timerbar{position:fixed;left:0;right:0;bottom:0;background:rgba(24,27,34,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:50}
+.timerbar .inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.clock{font-variant-numeric:tabular-nums;font-size:26px;font-weight:700;letter-spacing:-.5px;min-width:96px}
+.clock.paused{color:var(--warn)}
+.tmeta{font-size:11px;color:var(--dim);line-height:1.3;flex:1}
+.timerbar button{padding:11px 14px;font-size:14px;flex:0 0 auto}
+
+/* ---- Exercise cards ---- */
+.ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.ex.done{border-color:var(--accent);background:#141d18}
+.ex.reab{border-left:3px solid var(--reab)}
+.exhead{display:flex;align-items:flex-start;gap:10px}
+.exname{font-weight:600;font-size:15px;flex:1;line-height:1.3}
+.exnum{font-size:11px;color:var(--dim);font-weight:700;background:var(--card2);border-radius:6px;padding:2px 7px;flex:0 0 auto;margin-top:1px}
+.exprescr{font-size:13px;color:var(--accent2);margin:7px 0 0;font-weight:600}
+.exobs{font-size:12px;color:var(--dim);margin:5px 0 0}
+.tag{display:inline-block;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.5px;margin-right:5px}
+.tag-reab{background:#3b2154;color:var(--reab)}
+.tag-novo{background:#0d3a4a;color:var(--accent2)}
+.exactions{display:flex;gap:8px;margin-top:11px}
+.exactions button{flex:1;padding:10px;font-size:14px}
+.logfields{display:none;gap:8px;margin-top:10px;padding-top:11px;border-top:1px dashed var(--line)}
+.ex.done .logfields{display:flex}
+.field{flex:1}
+.field label{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;font-weight:600}
+.field input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px;font-size:16px;font-family:inherit;text-align:center;font-variant-numeric:tabular-nums}
+.field input:focus{outline:none;border-color:var(--accent2)}
+
+/* ---- Warmup / mobility blocks ---- */
+.block{background:var(--card2);border-radius:12px;padding:13px;margin-bottom:12px}
+.block .bt{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent2);font-weight:700;margin-bottom:6px}
+.block .bc{font-size:13px;color:var(--dim);line-height:1.5}
+.tip{background:#1c1a12;border-left:3px solid var(--warn);border-radius:0 10px 10px 0;padding:12px;margin:14px 0;font-size:13px;color:#d8cfae;line-height:1.55}
+.tip b{color:var(--warn)}
+.alert{background:#2a1417;border-left:3px solid var(--danger);border-radius:0 10px 10px 0;padding:12px;margin:14px 0;font-size:13px;color:#e8bfc2;line-height:1.55}
+
+/* ---- Modal ---- */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:86vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:20px 18px calc(28px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+.sheet h3{margin:0 0 4px;font-size:18px;line-height:1.3}
+.sheet .shsub{color:var(--accent2);font-size:13px;font-weight:600;margin:0 0 14px}
+.sheet ol{padding-left:20px;margin:0 0 14px}
+.sheet ol li{margin-bottom:9px;font-size:14px;line-height:1.5}
+.sheet .cuidado{background:#2a1417;border-radius:10px;padding:12px;font-size:13px;color:#e8bfc2;margin-bottom:14px;line-height:1.5}
+.sheet .cuidado b{color:var(--danger)}
+.grab{width:36px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 16px}
+
+/* ---- History ---- */
+.hist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:9px}
+.hist .hh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hist .hd{font-weight:600;font-size:14px}
+.hist .ht{font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums;font-weight:600}
+.hist .hm{font-size:12px;color:var(--dim);margin-top:4px}
+.hist details{margin-top:8px}
+.hist summary{font-size:12px;color:var(--accent2);cursor:pointer;user-select:none}
+.hist table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+.hist th{text-align:left;color:var(--dim);font-weight:600;padding:4px 6px 4px 0;border-bottom:1px solid var(--line);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+.hist td{padding:5px 6px 5px 0;border-bottom:1px solid #22262f;vertical-align:top}
+.empty{text-align:center;color:var(--dim);padding:34px 16px;font-size:14px}
+.prev{font-size:11px;color:var(--warn);margin-top:6px}
+.hidden{display:none!important}
+.progresspill{background:var(--card2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--dim);display:inline-block;margin-bottom:12px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ HOME ============ -->
+<section id="view-home">
+  <h1>Treino</h1>
+  <p class="sub" id="homeDate"></p>
+  <div id="installBox"></div>
+  <div id="backupBox"></div>
+  <div id="resumeBox"></div>
+  <h2>Escolha o dia</h2>
+  <div class="days" id="dayList"></div>
+  <h2>Histórico</h2>
+  <div id="histList"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="btn-ghost" onclick="exportCSV()">Exportar CSV</button>
+    <button class="btn-ghost" onclick="document.getElementById('importFile').click()">Importar CSV</button>
+  </div>
+  <input type="file" id="importFile" accept=".csv,text/csv" class="hidden" onchange="importCSV(this)">
+  <p class="sub" style="margin-top:16px;font-size:11px">Os dados ficam salvos só neste aparelho — nada é enviado para a internet. Exporte o CSV de vez em quando para não perder o histórico.</p>
+  <div class="foot">
+    Rotina v3 · app v<span id="verLabel"></span><br>
+    <button onclick="checkUpdate()">Buscar atualização</button>
+  </div>
+</section>
+
+<!-- ============ SESSION ============ -->
+<section id="view-session" class="hidden">
+  <button class="btn-ghost" style="padding:7px 12px;font-size:13px;margin-top:14px" onclick="backHome()">‹ Voltar</button>
+  <h1 id="sessTitle"></h1>
+  <p class="sub" id="sessSub"></p>
+  <div class="progresspill" id="progressPill"></div>
+  <div id="sessBody"></div>
+</section>
+
+</div>
+
+<!-- ============ TIMER BAR ============ -->
+<div class="timerbar hidden" id="timerBar">
+  <div class="inner">
+    <div>
+      <div class="clock" id="clock">00:00</div>
+      <div class="tmeta" id="tmeta"></div>
+    </div>
+    <button class="btn-warn" id="btnPause" onclick="togglePause()">Pausar</button>
+    <button class="btn-danger" onclick="finishSession()">Finalizar</button>
+  </div>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   BANCO DE INSTRUÇÕES
+   ========================================================= */
+const INSTR = {
+"Afundo búlgaro (apoio no banco)":{p:["Pé de trás sobre o banco, cadarço apoiado. Pé da frente ~70cm à frente.","Desça vertical até o joelho de trás quase tocar o chão. Tronco levemente inclinado.","Empurre pelo calcanhar da perna da frente para subir.","Halteres nas mãos ou peso do corpo."],c:"Olhe se o quadril <b>cai</b> para o lado na descida. Se cair, reduza a carga. Filme de lado uma vez por mês."},
+"Agachamento na gaiola hack":{p:["Barra apoiada no trapézio, pés na largura dos ombros, pontas levemente abertas.","Inspire, trave o core, desça empurrando o quadril para trás.","Desça até coxa paralela ou até onde manter as costas neutras.","Suba empurrando o chão. Não deixe os joelhos colapsarem pra dentro."],c:"Sempre com os <b>suportes de segurança</b> regulados na altura mais baixa do movimento."},
+"RDL unilateral com halteres":{p:["Um halter na mão oposta à perna de apoio. Joelho de apoio levemente flexionado.","Incline o tronco à frente empurrando o quadril para trás, perna livre estendendo atrás.","Desça até sentir alongar o isquiotibial. Costas retas.","Volte contraindo glúteo."],c:"Quadril <b>nivelado</b> — não deixe o lado livre subir. Vá devagar, é exercício de controle."},
+"Elevação pélvica (hip thrust) com barra":{p:["Costas apoiadas no banco na linha das escápulas. Barra sobre o quadril (use proteção).","Pés na largura do quadril, canela vertical no topo.","Suba o quadril até tronco-coxa alinhados. Contraia glúteo 1s.","Desça controlado sem tocar o chão."],c:"Não hiperestenda a lombar no topo — o movimento é de <b>glúteo</b>, não de coluna."},
+"Agachamento assistido na argola":{p:["Argolas na altura do peito. Segure uma em cada mão, braços estendidos.","Recue até os braços ficarem esticados, sustentando parte do peso.","Agache o mais fundo que conseguir, calcanhares no chão, tronco ereto.","Use as argolas só o mínimo necessário para subir."],c:"O objetivo é <b>amplitude</b>, não carga. Sem peso extra. Ótimo para tornozelo e quadril."},
+"Panturrilha em pé (apoio no espaldar)":{p:["Ponta dos pés numa borda elevada, calcanhares livres.","Mãos no espaldar só para equilíbrio.","Desça o calcanhar até alongar, suba o máximo na ponta dos pés.","Pausa de 1s em cima."],c:""},
+
+"Tecido — subidas (russa ou francesa)":{p:["<b>Confira a ancoragem e o mosquetão antes de começar.</b> Crash mat embaixo.","Russa: pise no tecido cruzando os pés, suba pelas pernas puxando pouco com os braços.","Francesa: sem chave nos pés, mais exigente — só se o antebraço estiver 100%.","Desça controlado, nunca escorregando (queimadura).","Descanso completo entre subidas: 1-2 min."],c:"<b>Teto de 4-6 subidas.</b> Subida detona o antebraço, e o seu cotovelo depende dele o resto da semana. Conte e pare mesmo se estiver se sentindo bem."},
+"Tecido — footlock simples + figura básica":{p:["Chave de pé simples: enrole o tecido no peito do pé e trave com o outro pé.","Teste a chave com pouco peso antes de carregar.","Pratique entrar e sair da chave dos dois lados.","Figura básica com a chave montada (ex.: bandeira / arabesque baixo)."],c:"Trabalho <b>técnico</b>, baixo. Se cansar o antebraço, baixe a altura em vez de forçar."},
+"Tecido — invertida com apoio (crucifixo/casulo)":{p:["Comece com quadril baixo. Puxe os joelhos ao peito e role o quadril para trás.","Passe as pernas pelo tecido e monte a posição devagar.","Mantenha o tecido próximo ao corpo — quanto mais longe, mais braço.","Saia na mesma velocidade que entrou."],c:"<b>Nada dinâmico.</b> Nada de drops. Cabeça para baixo exige muito do ombro: entra devagar, sai devagar. Máximo 4-6 entradas."},
+"Argola — support hold (falso apoio → apoio)":{p:["Argolas na altura do quadril. Comece em FALSO apoio: pés no chão, descarregando parte do peso.","Braços estendidos e travados, ombros <b>puxados para baixo</b> (deprimidos), argolas coladas ao corpo.","Segure 10-20s sem tremer. Corpo em linha, glúteo contraído.","Só passe para apoio completo (pés fora do chão) após 3x20s limpos de falso apoio."],c:"Rotação das argolas para fora (RTO) fica para <b>depois</b> — é muito exigente para o seu ombro direito. Nada de tremor descontrolado: se tremer muito, volte ao falso apoio."},
+"Argola — remada horizontal":{p:["Argolas na altura do quadril. Deite sob elas, corpo em linha, calcanhares no chão.","Puxe o peito em direção às argolas, cotovelos rentes ao corpo.","Aperte as escápulas no topo. Desça controlado em 2-3s.","Ajuste a dificuldade mudando o ângulo do corpo: mais horizontal = mais difícil."],c:"Pegada <b>neutra</b>, deixe as argolas girarem. Essa rotação livre é justamente o que protege seu cotovelo."},
+"Hollow body hold":{p:["Deitado de costas, lombar colada no chão (sem vão).","Levante escápulas e pernas, braços estendidos acima da cabeça.","Se for difícil, dobre os joelhos ou deixe os braços ao lado do corpo.","Respire — não prenda o ar."],c:"Se a <b>lombar descolar</b> do chão, a série acabou. Suba as pernas para facilitar."},
+"Tuck hold nas argolas":{p:["A partir do support hold ou pendurado nas argolas.","Puxe os joelhos em direção ao peito, quadril em retroversão.","Segure 3-5s por rep, ou mantenha estático.","Desça controlado, sem balançar."],c:""},
+
+"Speedball (pera)":{p:["Pera na altura da testa. Cotovelos altos, mãos próximas ao rosto.","Golpeie com a lateral do punho fechado, ritmo constante.","Três batidas por golpe (frente-trás-frente), depois alterne as mãos.","Comece devagar buscando ritmo, não força."],c:"Sem restrição para o seu punho — este é o seu exercício de boxe mais seguro."},
+"Saco de pancada":{p:["Bandagem e luvas, sempre.","Punho <b>alinhado</b> com o antebraço no impacto — nunca dobrado.","Trabalhe combinações e precisão: jab-direto, jab-jab-cruzado, esquiva.","Gire o quadril, o soco vem do chão, não do braço."],c:"<b>Modere a força de impacto</b> — punho é ponto sensível seu. Qualquer incômodo, pare o saco e siga só no speedball."},
+"Core: prancha + rotação de tronco":{p:["Prancha: antebraços sob os ombros, corpo em linha, glúteo contraído. 3x45s.","Rotação: sentado, joelhos dobrados, gire o tronco tocando o chão dos dois lados.","Alterne prancha e rotação até completar o bloco.","Prancha lateral opcional: 2x30s cada lado."],c:""},
+
+"Supino reto/inclinado":{p:["Escápulas retraídas e deprimidas no banco, pés firmes no chão.","Desça a barra até a linha do mamilo (reto) ou clavícula (inclinado), controlado.","Cotovelos a ~45° do tronco, não abertos a 90°.","Suba sem travar o cotovelo bruscamente."],c:"<b>Ombro direito:</b> se fisgar no fundo do movimento, reduza a amplitude ou passe a halteres. Não insista na dor."},
+"Desenvolvimento sentado com halteres":{p:["Sentado no banco reclinável (encosto quase vertical), costas apoiadas.","Halteres na altura das orelhas, palmas à frente ou neutras.","Suba sem travar o cotovelo. Não deixe a lombar arquear.","Desça controlado até a altura da orelha."],c:"<b>Palma neutra</b> (uma de frente pra outra) costuma ser mais confortável para o seu ombro direito. Nada de balístico."},
+"Flexão nas argolas (argolas baixas)":{p:["Argolas na altura do quadril (mais alto = mais fácil). Corpo em linha.","Desça o peito entre as argolas, cotovelos a ~45°.","Suba estabilizando — vai tremer no começo, é normal.","Vá baixando as argolas conforme ganhar controle."],c:"Punho <b>neutro</b> e rotação livre: melhor que parallettes para o seu punho e o seu cotovelo. Espere ser bem mais difícil que a flexão no chão."},
+"Argola — support hold":{p:["Argolas na altura do quadril. Braços estendidos, ombros deprimidos.","Corpo em linha, glúteo contraído, argolas coladas ao tronco.","Segure 15-25s. Progrida de falso apoio para apoio completo."],c:"Sem RTO por enquanto. Se o ombro direito reclamar, volte ao falso apoio."},
+"Elevação lateral leve":{p:["Halteres leves ao lado do corpo, cotovelo levemente flexionado.","Suba até a altura do ombro, não acima.","Mindinho levemente mais alto que o polegar? Não — mantenha neutro, é mais seguro para o ombro.","Desça em 3s."],c:"Carga <b>leve</b>. Não passar da linha do ombro. Se precisar de impulso, o peso está alto."},
+"Tríceps":{p:["Testa (com barra pequena) ou corda/elástico no espaldar.","Cotovelos fixos apontando à frente, só o antebraço se move.","Estenda completo sem travar bruscamente.","Desça em 2-3s."],c:"Se o <b>cotovelo</b> incomodar, troque a versão na testa por extensão com elástico, que tem menos carga no fundo."},
+"Rotação externa com elástico":{p:["Elástico preso na altura do cotovelo. Cotovelo colado ao tronco, dobrado a 90°.","Uma toalha enrolada entre cotovelo e costela ajuda a manter a posição.","Gire o antebraço para fora, só até onde não doer.","Volte em 3s. Carga leve, 3x15."],c:"<b>REAB — não pule.</b> Parece o exercício mais fraco da sessão e é o mais importante dela a longo prazo para o seu ombro direito."},
+
+"Remada nas argolas (corpo inclinado)":{p:["Argolas na altura do quadril, corpo inclinado sob elas, calcanhares no chão.","Pegada neutra. Puxe o peito às argolas, cotovelos rentes ao corpo.","Aperte as escápulas 1s no topo. Desça em 2-3s.","Mais horizontal = mais difícil. É assim que você progride."],c:"A rotação livre da argola <b>poupa o cotovelo</b> — reduz o torque na inserção dos tendões em relação à barra fixa."},
+"Remada curvada (pegada neutra ou pronada)":{p:["Quadril para trás, tronco a ~45°, costas neutras e travadas.","Puxe a barra ao umbigo, cotovelos rentes ao corpo.","Aperte escápulas no topo, desça em 2-3s.","Pegada neutra (halteres) ou pronada — nunca supinada pesada."],c:"<b>Evite supinada pesada:</b> é a pegada que mais castiga a face interna do cotovelo. Se a lombar cansar antes das costas, reduza a carga."},
+"Barra fixa / puxada assistida com elástico":{p:["Elástico no pé ou joelho para assistir. Pegada na largura dos ombros.","Comece com escápulas deprimidas (puxe os ombros para baixo antes de dobrar o cotovelo).","Puxe até o queixo passar a barra. Desça controlado em 3s.","Alternativa: fazer nas argolas, com pegada rotando livre."],c:"Se o <b>cotovelo</b> reclamar da barra fixa, troque por mais séries de remada na argola. Não force barra fixa com dor no cotovelo."},
+"Face pull com elástico":{p:["Elástico na altura do rosto, preso no espaldar ou na gaiola.","Puxe em direção à testa, separando as mãos, cotovelos altos.","Termine com as mãos ao lado das orelhas, escápulas apertadas.","Volte em 3s."],c:"Serve <b>ombro e cotovelo</b> ao mesmo tempo. Carga leve, muita qualidade."},
+"Rosca direta leve":{p:["Barra pequena ou halteres. Cotovelo colado ao tronco.","Suba controlado, sem balançar o corpo.","Desça em 3s — a fase excêntrica é a que importa aqui.","Carga leve. Rosca martelo (neutra) é alternativa mais amigável ao cotovelo."],c:"<b>Sem dor.</b> Se doer o cotovelo, troque por rosca martelo ou reduza para metade da carga."},
+"Excêntrico de punho (extensor e flexor)":{p:["<b>Extensor:</b> antebraço apoiado no banco, palma para BAIXO, peso leve na mão.","Suba o punho com AJUDA da outra mão. Solte a ajuda e desça sozinho em 3-4s.","<b>Flexor:</b> mesma coisa com a palma para CIMA.","3x12 de cada. Peso muito leve — 1 a 2kg é suficiente no começo."],c:"<b>O exercício mais importante da sua semana.</b> É o protocolo que efetivamente recupera o tendão, não só evita piora. Desconforto leve é esperado; dor aguda = reduzir carga, nunca pular."},
+
+"Bike ergométrica intervalada":{p:["15 min: alterne 1 min forte (resistência alta / RPE 8) com 1 min leve.","No minuto forte, mantenha cadência acima de 80rpm.","No minuto leve, não pare — pedale solto.","Ajuste o selim: joelho quase estendido no ponto mais baixo."],c:"Baixo impacto — bom para a sua assimetria de pernas. Observe se um pé empurra muito mais que o outro."},
+"Circuito funcional (3 voltas, 40s/20s)":{p:["Remada na argola — 40s","Agachamento com elástico — 40s","Prancha — 40s","Mountain climbers — 40s","Flexão na argola alta — 40s","20s de descanso entre exercícios, 90s entre voltas."],c:"Se cotovelo, ombro ou pernas estiverem cansados da semana, <b>corte o circuito</b> e fique na bike + flexibilidade. Um dos seis dias precisa ser negociável."},
+"Bloco de flexibilidade dirigida":{p:["Ombro/extensão no espaldar ou banco (cuidado no direito)","Extensão torácica sobre rolo","Meio-split progressivo, cada lado","Pancake / adutores","Ponte com apoio no espaldar","<b>Em cada posição:</b> 45s alongando + 10-15s de contração isométrica DENTRO da amplitude final + relaxar e ganhar 2-3cm. Repetir 2x."],c:"A contração isométrica no fim da amplitude é o que separa <b>alcançar</b> de <b>usar</b> a amplitude. Anote onde chegou e compare mês a mês, não semana a semana."}
+};
+
+/* =========================================================
+   ROTINA v3
+   ========================================================= */
+const R = {
+1:{nome:"Segunda",foco:"Pernas & Quadril",
+  por:"Você tem assimetria entre as pernas. Trabalho unilateral fortalece estabilizadores de quadril (glúteo médio) e melhora o controle — não corrige a diferença, dá suporte a ela.",
+  aq:"90/90 • leg swings • monster walk e clamshell com elástico • corda de pular 2 min",
+  mob:"Flexor de quadril (lunge com retroversão pélvica) 2x45s cada • isquiotibiais no espaldar 2x45s cada • piriforme 2x40s cada • tornozelo (joelho à parede) 2x30s cada",
+  dica:"Grave um vídeo lateral dos afundos de vez em quando e veja se o quadril cai de um lado. Se cair, reduza a carga antes de aumentar. O agachamento na argola é seu novo melhor amigo de amplitude — a mão apoiada tira o medo de cair pra trás e você desce muito mais fundo.",
+  ex:[
+  {n:"Afundo búlgaro (apoio no banco)",s:"3 x 10 cada perna",o:"Unilateral primeiro, cabeça fresca",w:1},
+  {n:"Agachamento na gaiola hack",s:"4 x 8",o:"Base bilateral, carga moderada",w:1},
+  {n:"RDL unilateral com halteres",s:"3 x 8 cada perna",o:"Hip hinge + propriocepção",w:1},
+  {n:"Elevação pélvica (hip thrust) com barra",s:"3 x 12",o:"Glúteo e posterior",w:1},
+  {n:"Agachamento assistido na argola",s:"3 x 12",o:"Amplitude, sem carga extra",w:0,novo:1},
+  {n:"Panturrilha em pé (apoio no espaldar)",s:"3 x 15",o:"",w:1}]},
+
+2:{nome:"Terça",foco:"Aéreos — Tecido & Argolas",
+  por:"Dia que ataca direto o objetivo circense, agora com o equipamento instalado. É o dia de maior demanda de preensão da semana — por isso vem depois de um dia de perna, com antebraço descansado.",
+  aq:"Malabarismo livre 3 min • mobilidade articular geral • gato-camelo • dead hang 3x15s • scapular pulls 2x8 • rotação externa com elástico 2x15",
+  mob:"Dorsal no espaldar 2x45s cada • ombro em extensão 2x40s • extensão torácica sobre rolo 2x45s • flexores e extensores de antebraço 2x40s cada (obrigatório) • dead hang passivo 2x20s",
+  dica:"A tentação na primeira semana vai ser subir dez vezes só pela alegria de ter o brinquedo em casa. Não faça. O antebraço é o gargalo de todo o seu treino de tronco — ele aparece na terça, quinta, sexta e sábado. Estourar ele hoje custa a semana inteira. Conte as subidas e pare no número, mesmo se estiver se sentindo ótimo.",
+  alerta:"Confira ancoragem, mosquetão e costura antes de cada sessão. Crash mat embaixo do tecido sempre. Avise alguém que você vai treinar aéreo e deixe o celular no tatame. Nada de drops ou movimentos dinâmicos.",
+  ex:[
+  {n:"Tecido — subidas (russa ou francesa)",s:"4 a 6 subidas no total",o:"TETO RÍGIDO. Descanso completo entre subidas",w:0,novo:1},
+  {n:"Tecido — footlock simples + figura básica",s:"15 min de prática",o:"Técnico, baixa carga de antebraço",w:0,novo:1},
+  {n:"Tecido — invertida com apoio (crucifixo/casulo)",s:"4 a 6 entradas",o:"Entrar e sair devagar. Nada dinâmico",w:0,novo:1},
+  {n:"Argola — support hold (falso apoio → apoio)",s:"4 x 10-20s",o:"Progressão-chave. Ombro deprimido",w:0,novo:1},
+  {n:"Argola — remada horizontal",s:"3 x 10",o:"Ângulo do corpo regula a carga",w:0,novo:1},
+  {n:"Hollow body hold",s:"3 x 30-45s",o:"Core circense",w:0},
+  {n:"Tuck hold nas argolas",s:"3 x 8-10",o:"Compressão de quadril",w:0}]},
+
+3:{nome:"Quarta",foco:"Boxe & Cardio",
+  por:"Cardio de alta queima, coordenação e alívio de estresse, respeitando o seu punho. Também é o dia de descarga do antebraço entre terça e quinta.",
+  aq:"Corda 3 min • mobilidade de ombro e punho • shadow boxing leve",
+  mob:"Rotação torácica (open book) 2x8 cada • deltoide posterior 2x40s cada • flexores e extensores de punho 2x40s cada • panturrilha 2x30s",
+  dica:"Bandagem e luvas sempre. Treine para acertar limpo, não para bater forte — pense em combinações e precisão. Qualquer incômodo no punho, pare o saco e siga só no speedball, que não tem restrição pra você.",
+  ex:[
+  {n:"Speedball (pera)",s:"4 rounds x 2 min",o:"Ótimo para ombro, sem impacto no punho",w:0},
+  {n:"Saco de pancada",s:"5 rounds x 2 min (1 min descanso)",o:"Técnica e precisão, não potência",w:0},
+  {n:"Core: prancha + rotação de tronco",s:"8 min",o:"",w:0}]},
+
+4:{nome:"Quinta",foco:"Push + Ombro",
+  por:"Hipertrofia de empurrar combinada com o protocolo de fortalecimento do ombro direito. As argolas entram como opção de punho neutro.",
+  aq:"Wall slides no espaldar • ativação de manguito rotador com elástico leve • falso apoio na argola 2x10s",
+  mob:"Peitoral no batente (3 alturas de cotovelo) 2x40s cada • extensão torácica sobre rolo 2x45s • sleeper stretch leve no ombro direito 2x30s • tríceps 2x30s cada",
+  dica:"Técnica antes de ego, principalmente no ombro direito — fisgada no supino significa reduzir amplitude ou mudar ângulo, não insistir. A flexão nas argolas vai parecer absurdamente mais difícil que no chão nas primeiras semanas; isso é normal e é o custo da estabilização. Comece com as argolas na altura do quadril e vá baixando.",
+  ex:[
+  {n:"Supino reto/inclinado",s:"4 x 8",o:"ROM confortável, sem dor no ombro direito",w:1},
+  {n:"Desenvolvimento sentado com halteres",s:"3 x 8",o:"Sentado reduz instabilidade",w:1},
+  {n:"Flexão nas argolas (argolas baixas)",s:"3 x 8-10",o:"Punho neutro — melhor que parallettes pra você",w:0,novo:1},
+  {n:"Argola — support hold",s:"3 x 15-25s",o:"Progressão continuada da terça",w:0,novo:1},
+  {n:"Elevação lateral leve",s:"3 x 15",o:"Deltoide médio, baixo impacto",w:1},
+  {n:"Tríceps",s:"3 x 12",o:"",w:1},
+  {n:"Rotação externa com elástico",s:"3 x 15",o:"REAB — não pular",w:0,reab:1}]},
+
+5:{nome:"Sexta",foco:"Pull + Cotovelo",
+  por:"Hipertrofia de puxar combinada com o protocolo excêntrico de punho. As argolas mudam este dia: a rotação livre reduz o estresse na inserção dos tendões do cotovelo em relação à barra fixa.",
+  aq:"Alongamento de antebraço • mobilidade escapular • dead hang curto 10-15s para testar a tolerância do dia",
+  mob:"Dorsal no espaldar 2x45s cada • extensor de antebraço (cotovelo estendido, punho flexionado) 3x40s cada • flexor de antebraço 3x40s cada • punho em quatro apoios, leve, 2x30s",
+  dica:"O excêntrico de punho continua sendo o exercício mais importante da sexta — é o que realmente recupera o tendão, não só evita piora. Desconforto leve é esperado; dor aguda significa reduzir carga, nunca pular a série. Se a terça de tecido tiver sido pesada no antebraço, troque a barra fixa por mais remada nas argolas e siga em frente.",
+  ex:[
+  {n:"Remada nas argolas (corpo inclinado)",s:"4 x 10",o:"Pegada neutra, rotação livre",w:0,novo:1},
+  {n:"Remada curvada (pegada neutra ou pronada)",s:"3 x 8",o:"Evitar supinada pesada",w:1},
+  {n:"Barra fixa / puxada assistida com elástico",s:"3 x 5-8",o:"Nas argolas se o cotovelo reclamar",w:0},
+  {n:"Face pull com elástico",s:"3 x 15",o:"Serve ombro e cotovelo",w:0},
+  {n:"Rosca direta leve",s:"3 x 12",o:"Sem dor",w:1},
+  {n:"Excêntrico de punho (extensor e flexor)",s:"3 x 12 cada",o:"Descida 3-4s, subida com ajuda da outra mão",w:1,reab:1}]},
+
+6:{nome:"Sábado",foco:"Cardio & Flexibilidade",
+  por:"Maior volume de cardio de baixo impacto e o bloco grande de flexibilidade, que saiu da terça para dar lugar aos aéreos. Faz sentido aqui: intensidade baixa e corpo aquecido.",
+  aq:"Bike leve 3 min + malabarismo 3 min",
+  mob:"O bloco 3 já é a mobilidade do dia. Finalize com respiração longa deitado, 2 min.",
+  dica:"Este é o dia de autorregular. Se cotovelo, ombro ou pernas estiverem cansados da semana, corte o circuito, alongue mais e fique na bike. Seis dias por semana aos 48 só funciona se um deles for negociável.",
+  ex:[
+  {n:"Bike ergométrica intervalada",s:"15 min (1 forte / 1 leve)",o:"Cardio principal",w:0},
+  {n:"Circuito funcional (3 voltas, 40s/20s)",s:"3 voltas",o:"Baixo impacto axial",w:0},
+  {n:"Bloco de flexibilidade dirigida",s:"22 min",o:"45s + isometria em amplitude final",w:0}]},
+
+0:{nome:"Domingo",foco:"Descanso",
+  por:"Descanso é parte do treino, não ausência dele. É quando a adaptação acontece.",
+  aq:"—",
+  mob:"Opcional: 10-15 min de alongamento leve ou caminhada",
+  dica:"Não conta como treino. Se você chegou aqui com o corpo pedindo movimento, uma caminhada resolve — resistir ao impulso de treinar hoje é o que sustenta os outros seis dias.",
+  ex:[]}
+};
+
+const DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+const K_HIST="treino_hist_v3", K_ACT="treino_active_v3", K_EXP="treino_lastexport_v3", K_DISM="treino_dismiss_v3";
+const APP_VERSION="1.0.1";
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+let S=null, tick=null;
+
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert("Não consegui salvar. O armazenamento do navegador pode estar cheio ou bloqueado.")}}
+function hist(){return load(K_HIST,[])}
+function pad(n){return String(n).padStart(2,"0")}
+function fmt(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h>0?h+":"+pad(m)+":"+pad(s):pad(m)+":"+pad(s)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function elapsed(){if(!S)return 0;const base=S.acc||0;return S.paused?base:base+(Date.now()-S.resumedAt)}
+
+/* =========================================================
+   HOME
+   ========================================================= */
+function isStandalone(){
+  return window.navigator.standalone===true ||
+         (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches);
+}
+
+function renderHome(){
+  const now=new Date(), td=now.getDay();
+  document.getElementById("homeDate").textContent=
+    DIAS[td]+", "+now.toLocaleDateString("pt-BR",{day:"2-digit",month:"long",year:"numeric"});
+  const vl=document.getElementById("verLabel"); if(vl)vl.textContent=APP_VERSION;
+
+  // Convite para instalar na tela de início (só no Safari, fora do modo app)
+  const ib=document.getElementById("installBox");
+  const iOSsafari=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS/.test(navigator.userAgent);
+  if(ib){
+    if(!isStandalone()&&iOSsafari&&!load(K_DISM,false)){
+      ib.innerHTML='<div class="banner"><b>Instale na tela de início.</b> Toque no botão Compartilhar (o quadrado com a seta para cima), '
+        +'role a lista e escolha <b>Adicionar à Tela de Início</b>. O app abre em tela cheia, sem a barra do navegador, e funciona sem internet.'
+        +'<button class="btn-ghost" onclick="dismissInstall()">Já entendi, não mostrar mais</button></div>';
+    } else ib.innerHTML="";
+  }
+
+  // Lembrete de backup
+  const bb=document.getElementById("backupBox");
+  if(bb){
+    const h=hist(), last=load(K_EXP,0);
+    const pend=h.filter(s=>s.start>last).length;
+    if(pend>=5){
+      bb.innerHTML='<div class="banner"><b>Faça um backup.</b> Você tem '+pend+' treinos ainda não exportados. '
+        +'O iPhone pode apagar os dados do app se ele ficar semanas sem ser aberto — exportar o CSV protege seu histórico.'
+        +'<button class="btn-primary" onclick="exportCSV()">Exportar agora</button></div>';
+    } else bb.innerHTML="";
+  }
+
+  // Retomar sessão
+  const a=load(K_ACT,null), rb=document.getElementById("resumeBox");
+  if(a){
+    rb.innerHTML='<div class="block" style="border:1px solid var(--accent)"><div class="bt">Sessão em andamento</div>'
+      +'<div class="bc">'+esc(R[a.day].nome)+' — '+esc(R[a.day].foco)+'<br>Iniciada '+esc(new Date(a.start).toLocaleString("pt-BR"))+'</div>'
+      +'<div class="row" style="margin-top:10px"><button class="btn-primary" onclick="resumeSession()">Retomar</button>'
+      +'<button class="btn-ghost" onclick="discardSession()">Descartar</button></div></div>';
+  } else rb.innerHTML="";
+
+  // Dias
+  const order=[1,2,3,4,5,6,0];
+  document.getElementById("dayList").innerHTML=order.map(d=>{
+    const day=R[d], n=day.ex.length;
+    return '<button class="daycard'+(d===td?" today":"")+'" onclick="startSession('+d+')">'
+      +'<div class="dn">'+esc(day.nome)+(d===td?'<span class="badge-today">HOJE</span>':'')+'</div>'
+      +'<div class="dt">'+esc(day.foco)+'</div>'
+      +'<div class="dm">'+(n?n+" exercícios":"sem exercícios")+'</div></button>';
+  }).join("");
+
+  renderHist();
+}
+
+function renderHist(){
+  const h=hist(), el=document.getElementById("histList");
+  if(!h.length){el.innerHTML='<div class="empty">Nenhum treino registrado ainda.<br>Escolha um dia acima para começar.</div>';return}
+  el.innerHTML=h.slice().reverse().slice(0,30).map(s=>{
+    const d=new Date(s.start), done=s.log.filter(l=>l.done);
+    const rows=done.map(l=>'<tr><td>'+esc(l.n)+'</td><td style="text-align:center">'+esc(l.reps||"—")+'</td><td style="text-align:right">'+(l.peso?esc(l.peso)+" kg":"—")+'</td></tr>').join("");
+    return '<div class="hist"><div class="hh"><div class="hd">'+esc(s.nome)+' — '+esc(s.foco)+'</div><div class="ht">'+esc(fmt(s.dur))+'</div></div>'
+      +'<div class="hm">'+esc(d.toLocaleDateString("pt-BR"))+' às '+esc(pad(d.getHours())+":"+pad(d.getMinutes()))
+      +' · '+done.length+'/'+s.log.length+' exercícios'+(s.pausas?' · '+s.pausas+' pausa'+(s.pausas>1?"s":""):"")+'</div>'
+      +(rows?'<details><summary>Ver registros</summary><table><tr><th>Exercício</th><th style="text-align:center">Últ. série</th><th style="text-align:right">Peso</th></tr>'+rows+'</table></details>':"")
+      +'</div>';
+  }).join("");
+}
+
+/* =========================================================
+   SESSÃO
+   ========================================================= */
+function startSession(d){
+  if(load(K_ACT,null)&&!confirm("Já existe uma sessão em andamento. Descartar e começar outra?"))return;
+  const day=R[d];
+  S={day:d,nome:day.nome,foco:day.foco,start:Date.now(),acc:0,resumedAt:Date.now(),paused:false,pausas:0,
+     log:day.ex.map(e=>({n:e.n,done:false,reps:"",peso:""}))};
+  save(K_ACT,S); openSession();
+}
+function resumeSession(){
+  S=load(K_ACT,null); if(!S)return renderHome();
+  if(!S.paused)S.resumedAt=Date.now();
+  openSession();
+}
+function discardSession(){
+  if(!confirm("Descartar a sessão em andamento? O registro será perdido."))return;
+  localStorage.removeItem(K_ACT); S=null; renderHome();
+}
+function backHome(){
+  if(S)save(K_ACT,S);
+  stopTick(); letSleep();
+  document.getElementById("view-session").classList.add("hidden");
+  document.getElementById("view-home").classList.remove("hidden");
+  document.getElementById("timerBar").classList.add("hidden");
+  window.scrollTo(0,0); renderHome();
+}
+
+function openSession(){
+  document.getElementById("view-home").classList.add("hidden");
+  document.getElementById("view-session").classList.remove("hidden");
+  document.getElementById("timerBar").classList.remove("hidden");
+  const day=R[S.day], st=new Date(S.start);
+  document.getElementById("sessTitle").textContent=day.nome+" — "+day.foco;
+  document.getElementById("sessSub").textContent="Iniciado em "+st.toLocaleDateString("pt-BR")+" às "+pad(st.getHours())+":"+pad(st.getMinutes());
+  document.getElementById("btnPause").textContent=S.paused?"Retomar":"Pausar";
+  renderBody(); startTick(); if(!S.paused)keepAwake(); window.scrollTo(0,0);
+}
+
+function renderBody(){
+  const day=R[S.day];
+  let h="";
+  h+='<div class="block"><div class="bt">Por que este dia</div><div class="bc">'+esc(day.por)+'</div></div>';
+  if(day.alerta)h+='<div class="alert"><b>Segurança nos aéreos.</b> '+esc(day.alerta)+'</div>';
+  h+='<div class="block"><div class="bt">Aquecimento</div><div class="bc">'+esc(day.aq)+'</div></div>';
+
+  if(day.ex.length){
+    h+='<h2>Exercícios</h2>';
+    h+=day.ex.map((e,i)=>{
+      const l=S.log[i];
+      return '<div class="ex'+(l.done?" done":"")+(e.reab?" reab":"")+'" id="ex'+i+'">'
+        +'<div class="exhead"><span class="exnum">'+(i+1)+'</span><div style="flex:1">'
+        +(e.reab?'<span class="tag tag-reab">REAB</span>':'')+(e.novo?'<span class="tag tag-novo">NOVO</span>':'')
+        +'<span class="exname">'+esc(e.n)+'</span>'
+        +'<div class="exprescr">'+esc(e.s)+'</div>'
+        +(e.o?'<div class="exobs">'+esc(e.o)+'</div>':'')
+        +prevHint(e.n)
+        +'</div></div>'
+        +'<div class="exactions">'
+        +'<button class="btn-ghost" onclick="showInstr('+i+')">Como executar</button>'
+        +'<button class="'+(l.done?"btn-ghost":"btn-primary")+'" onclick="toggleDone('+i+')">'+(l.done?"Desfazer":"Concluir")+'</button>'
+        +'</div>'
+        +'<div class="logfields">'
+        +'<div class="field"><label>Reps na última série</label>'
+        +'<input type="number" inputmode="numeric" pattern="[0-9]*" placeholder="—" value="'+esc(l.reps)+'" oninput="setLog('+i+',\'reps\',this.value)"></div>'
+        +(e.w?'<div class="field"><label>Peso (kg)</label><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+esc(l.peso)+'" oninput="setLog('+i+',\'peso\',this.value)"></div>':'')
+        +'</div></div>';
+    }).join("");
+  } else {
+    h+='<div class="empty">Dia de descanso. Nada a registrar.</div>';
+  }
+
+  h+='<div class="block" style="margin-top:14px"><div class="bt">Mobilidade final</div><div class="bc">'+esc(day.mob)+'</div></div>';
+  h+='<div class="tip"><b>Dica de personal.</b> '+esc(day.dica)+'</div>';
+  document.getElementById("sessBody").innerHTML=h;
+  updProgress();
+}
+
+function prevHint(name){
+  const h=hist();
+  for(let i=h.length-1;i>=0;i--){
+    const l=(h[i].log||[]).find(x=>x.n===name&&x.done&&(x.reps||x.peso));
+    if(l){
+      const parts=[];
+      if(l.reps)parts.push(l.reps+" reps");
+      if(l.peso)parts.push(l.peso+" kg");
+      return '<div class="prev">Última vez: '+esc(parts.join(" · "))+' ('+esc(new Date(h[i].start).toLocaleDateString("pt-BR"))+')</div>';
+    }
+  }
+  return "";
+}
+
+function toggleDone(i){
+  S.log[i].done=!S.log[i].done;
+  save(K_ACT,S);
+  const el=document.getElementById("ex"+i);
+  el.classList.toggle("done",S.log[i].done);
+  const b=el.querySelectorAll(".exactions button")[1];
+  b.textContent=S.log[i].done?"Desfazer":"Concluir";
+  b.className=S.log[i].done?"btn-ghost":"btn-primary";
+  if(S.log[i].done){const inp=el.querySelector(".logfields input");if(inp)setTimeout(()=>inp.focus(),80)}
+  updProgress();
+}
+function setLog(i,f,v){S.log[i][f]=v;save(K_ACT,S)}
+function updProgress(){
+  const t=S.log.length,d=S.log.filter(l=>l.done).length;
+  document.getElementById("progressPill").textContent=t?d+" de "+t+" exercícios concluídos":"Dia de descanso";
+}
+
+/* ---- Instruções ---- */
+function showInstr(i){
+  const e=R[S.day].ex[i], d=INSTR[e.n]||{p:["Instruções ainda não cadastradas para este exercício."],c:""};
+  document.getElementById("sheet").innerHTML='<div class="grab"></div>'
+    +'<h3>'+esc(e.n)+'</h3><p class="shsub">'+esc(e.s)+'</p>'
+    +'<ol>'+d.p.map(x=>'<li>'+x+'</li>').join("")+'</ol>'
+    +(d.c?'<div class="cuidado"><b>Atenção:</b> '+d.c+'</div>':'')
+    +'<button class="btn-ghost" style="width:100%" onclick="closeModal()">Fechar</button>';
+  document.getElementById("modal").classList.add("open");
+}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+
+/* ---- Timer ---- */
+function startTick(){stopTick();paint();tick=setInterval(paint,500)}
+function stopTick(){if(tick){clearInterval(tick);tick=null}}
+function paint(){
+  if(!S)return;
+  const c=document.getElementById("clock");
+  c.textContent=fmt(elapsed());
+  c.classList.toggle("paused",!!S.paused);
+  document.getElementById("tmeta").textContent=S.paused?"Em pausa":(S.pausas?S.pausas+" pausa"+(S.pausas>1?"s":""):"Em andamento");
+}
+function togglePause(){
+  if(!S)return;
+  if(S.paused){S.resumedAt=Date.now();S.paused=false;document.getElementById("btnPause").textContent="Pausar";keepAwake()}
+  else{S.acc=elapsed();S.paused=true;S.pausas=(S.pausas||0)+1;document.getElementById("btnPause").textContent="Retomar";letSleep()}
+  save(K_ACT,S);paint();
+}
+
+/* ---- Finalizar ---- */
+function finishSession(){
+  if(!S)return;
+  const d=S.log.filter(l=>l.done).length;
+  if(!confirm("Finalizar o treino?\n\nTempo: "+fmt(elapsed())+"\nExercícios concluídos: "+d+" de "+S.log.length))return;
+  const h=hist();
+  h.push({start:S.start,end:Date.now(),dur:elapsed(),day:S.day,nome:S.nome,foco:S.foco,pausas:S.pausas||0,log:S.log});
+  save(K_HIST,h);
+  localStorage.removeItem(K_ACT);
+  const dur=fmt(elapsed()); S=null; stopTick(); letSleep();
+  document.getElementById("btnPause").textContent="Pausar";
+  document.getElementById("view-session").classList.add("hidden");
+  document.getElementById("view-home").classList.remove("hidden");
+  document.getElementById("timerBar").classList.add("hidden");
+  window.scrollTo(0,0); renderHome();
+  setTimeout(()=>alert("Treino registrado. Duração: "+dur),120);
+}
+
+/* =========================================================
+   CSV
+   ========================================================= */
+function q(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
+function exportCSV(){
+  const h=hist();
+  if(!h.length)return alert("Nenhum treino para exportar ainda.");
+  const rows=[["data","hora_inicio","dia","foco","duracao_seg","duracao_hms","pausas","exercicio","concluido","reps_ultima_serie","peso_kg"]];
+  h.forEach(s=>{
+    const d=new Date(s.start);
+    const dt=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+    const hh=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+    s.log.forEach(l=>rows.push([dt,hh,s.nome,s.foco,Math.round(s.dur/1000),fmt(s.dur),s.pausas||0,l.n,l.done?"sim":"nao",l.reps||"",l.peso||""]));
+  });
+  const csv="﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n");
+  const fname="treino-historico-"+new Date().toISOString().slice(0,10)+".csv";
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  save(K_EXP,Date.now());
+  // iOS: compartilhar é muito mais confiável que download direto
+  const file=(typeof File!=="undefined")?new File([blob],fname,{type:"text/csv"}):null;
+  if(navigator.canShare&&file&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"Histórico de treino"})
+      .then(()=>renderHome())
+      .catch(()=>{dlBlob(blob,fname);renderHome()});
+    return;
+  }
+  dlBlob(blob,fname); renderHome();
+}
+function dlBlob(blob,fname){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=fname;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+function parseCSV(txt){
+  const rows=[];let row=[],cur="",inQ=false;
+  txt=txt.replace(/^﻿/,"");
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i];
+    if(inQ){ if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++} else inQ=false } else cur+=c }
+    else if(c==='"')inQ=true;
+    else if(c===","){row.push(cur);cur=""}
+    else if(c==="\n"){row.push(cur);cur="";rows.push(row);row=[]}
+    else if(c!=="\r")cur+=c;
+  }
+  if(cur!==""||row.length){row.push(cur);rows.push(row)}
+  return rows.filter(r=>r.length>1||(r[0]||"").trim()!=="");
+}
+
+function importCSV(input){
+  const f=input.files&&input.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const rows=parseCSV(String(rd.result));
+      if(rows.length<2)throw new Error("vazio");
+      const H=rows[0].map(x=>x.trim().toLowerCase());
+      const ix=n=>H.indexOf(n);
+      const need=["data","hora_inicio","dia","foco","duracao_seg","exercicio","concluido"];
+      if(need.some(n=>ix(n)<0))throw new Error("colunas");
+      const map=new Map();
+      for(let i=1;i<rows.length;i++){
+        const r=rows[i]; if(r.length<need.length)continue;
+        const key=r[ix("data")]+"T"+r[ix("hora_inicio")]+"|"+r[ix("dia")]+"|"+r[ix("duracao_seg")];
+        if(!map.has(key)){
+          const dt=new Date(r[ix("data")]+"T"+r[ix("hora_inicio")]);
+          if(isNaN(dt))continue;
+          const dayNum=DIAS.indexOf(r[ix("dia")]);
+          map.set(key,{start:dt.getTime(),dur:(parseInt(r[ix("duracao_seg")],10)||0)*1000,
+            day:dayNum<0?1:dayNum,nome:r[ix("dia")],foco:r[ix("foco")],
+            pausas:ix("pausas")>=0?(parseInt(r[ix("pausas")],10)||0):0,log:[]});
+        }
+        map.get(key).log.push({n:r[ix("exercicio")],done:r[ix("concluido")]==="sim",
+          reps:ix("reps_ultima_serie")>=0?r[ix("reps_ultima_serie")]:"",
+          peso:ix("peso_kg")>=0?r[ix("peso_kg")]:""});
+      }
+      const inc=[...map.values()];
+      if(!inc.length)throw new Error("nenhuma sessão válida");
+      const sig=s=>Math.floor(s.start/1000)+"|"+s.nome+"|"+Math.round(s.dur/1000);
+      const cur=hist(), seen=new Set(cur.map(sig));
+      let add=0;
+      inc.forEach(s=>{if(!seen.has(sig(s))){cur.push(s);seen.add(sig(s));add++}});
+      cur.sort((a,b)=>a.start-b.start);
+      save(K_HIST,cur); renderHist();
+      alert(add?add+" sessão(ões) importada(s). "+(inc.length-add)+" já existiam.":"Nenhuma sessão nova — todas já estavam no histórico.");
+    }catch(e){
+      alert("Não consegui ler esse arquivo. Use um CSV exportado por este app.");
+    }
+    input.value="";
+  };
+  rd.readAsText(f,"utf-8");
+}
+
+/* =========================================================
+   TELA ACESA DURANTE O TREINO (Wake Lock)
+   ========================================================= */
+let wl=null;
+async function keepAwake(){
+  try{ if("wakeLock" in navigator && !wl){ wl=await navigator.wakeLock.request("screen"); wl.addEventListener("release",()=>{wl=null}); } }
+  catch(e){ /* iOS antigo ou bateria baixa: segue sem travar a tela */ }
+}
+function letSleep(){ if(wl){ try{wl.release()}catch(e){} wl=null } }
+
+/* =========================================================
+   INSTALAÇÃO / ATUALIZAÇÃO
+   ========================================================= */
+function dismissInstall(){ save(K_DISM,true); renderHome() }
+
+async function checkUpdate(){
+  if(!("serviceWorker" in navigator)) return location.reload();
+  try{
+    const r=await navigator.serviceWorker.getRegistration();
+    if(!r) return location.reload();
+    await r.update();
+    if(r.waiting){
+      r.waiting.postMessage({type:"SKIP_WAITING"});
+      setTimeout(()=>location.reload(),400);
+    } else {
+      alert("Você já está na versão mais recente ("+APP_VERSION+").");
+    }
+  }catch(e){ location.reload() }
+}
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+    let reloaded=false;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+      if(!reloaded){reloaded=true;location.reload()}
+    });
+  });
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+function persistNow(){ if(S)save(K_ACT,S) }
+window.addEventListener("beforeunload",persistNow);
+window.addEventListener("pagehide",persistNow);   // iOS: mais confiável que beforeunload
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){ persistNow(); }
+  else if(S){ paint(); if(!S.paused) keepAwake(); }
+});
+renderHome();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Lista de PERMISSÃO, não de bloqueio.
+# Por padrão, TUDO nesta pasta fica de fora do repositório.
+# Só o que é explicitamente liberado abaixo entra.
+#
+# Isso é proposital: os arquivos com informação de saúde do usuário
+# (equipamentos.md, necessidades-especiais.md, rotina-semanal-hibrida.md,
+# COMO-PUBLICAR.md) vivem nesta mesma pasta e o repositório é público.
+# Se um arquivo novo for criado aqui e ninguém lembrar de ignorá-lo,
+# o padrão é ficar de fora — não o contrário.
+#
+# Ao adicionar algo que DEVE ser publicado, libere explicitamente abaixo.
+
+/*
+
+!/app/
+!/app/**
+
+!/README.md
+!/.gitignore

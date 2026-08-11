@@ -70,6 +70,11 @@ button:disabled{opacity:.35}
 .ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
 .ex.done{border-color:var(--accent);background:#141d18}
 .ex.reab{border-left:3px solid var(--reab)}
+.ex.leve{background:#15181e;padding:12px 14px}
+.ex.leve .exname{font-size:14px;font-weight:600}
+.ex.leve .exactions button{padding:9px;font-size:13px}
+.seccount{font-size:11px;color:var(--dim);background:var(--card2);border-radius:20px;padding:2px 9px;font-variant-numeric:tabular-nums;letter-spacing:0;font-weight:700;vertical-align:middle;margin-left:4px}
+.seccount.full{background:#14331f;color:var(--accent)}
 .exhead{display:flex;align-items:flex-start;gap:10px}
 .exname{font-weight:600;font-size:15px;flex:1;line-height:1.3}
 .exnum{font-size:11px;color:var(--dim);font-weight:700;background:var(--card2);border-radius:6px;padding:2px 7px;flex:0 0 auto;margin-top:1px}
@@ -185,6 +190,53 @@ button:disabled{opacity:.35}
    BANCO DE INSTRUÇÕES
    ========================================================= */
 const INSTR = {
+
+/* ---------- AQUECIMENTO ---------- */
+"90/90 (rotação de quadril)":{p:["Sentado no chão. Perna da frente dobrada a 90° à sua frente; perna de trás dobrada a 90° para o lado. Vistas de cima, as duas pernas formam dois Ls.","Tronco ereto, mãos no chão para apoio.","Gire os dois joelhos para o outro lado ao mesmo tempo, deixando as pernas 'varrerem' o chão, até montar o 90/90 espelhado.","Vai e volta devagar. Uma ida e volta = 1 repetição.","Para aumentar: incline o tronco sobre a perna da frente e segure 3s antes de girar."],c:"Movimento de <b>quadril</b>, não de joelho. Se o joelho reclamar, abra um pouco o ângulo em vez de forçar os 90°."},
+"Leg swings (balanço de perna)":{p:["Em pé, uma mão apoiada no espaldar ou na gaiola.","<b>Frente-trás:</b> balance uma perna à frente e atrás, relaxada, como um pêndulo. Tronco parado.","<b>Lateral:</b> vire de frente para o apoio e balance a perna cruzando na frente do corpo e abrindo para fora.","Comece com amplitude pequena e vá aumentando a cada balanço.","10 de cada direção, depois troca a perna."],c:"Movimento <b>solto</b>, sem forçar o fim da amplitude. É aquecimento, não alongamento — nada de segurar a posição."},
+"Monster walk com elástico":{p:["Elástico em volta das duas pernas, logo acima dos joelhos (mais fácil) ou nos tornozelos (mais difícil).","Semi-agachado: joelhos levemente dobrados, quadril para trás, tronco ereto. Fique nessa altura o tempo todo.","Ande para o lado dando passos largos, sem deixar os pés se juntarem — mantenha tensão no elástico sempre.","12 passos para um lado, 12 de volta.","Variação diagonal: ande para frente em zigue-zague, passos abertos."],c:"O joelho <b>não pode colapsar para dentro</b> — é justamente contra isso que você está treinando. Se colapsar, use elástico mais leve."},
+"Clamshell com elástico":{p:["Deitado de lado, joelhos dobrados a ~90°, quadril e ombros empilhados. Elástico acima dos joelhos.","Pés encostados um no outro o tempo todo.","Abra o joelho de cima como uma concha (daí o nome), sem deixar o quadril rolar para trás.","Segure 1s no topo, desça em 2s.","15 de um lado, depois vira."],c:"Coloque a mão no quadril de cima: se ele <b>rolar para trás</b>, você está usando a lombar em vez do glúteo. Diminua a amplitude."},
+"Corda de pular":{p:["Saltos baixos — o suficiente para a corda passar, não mais que isso.","Aterrisse na ponta dos pés, joelho levemente flexionado, silencioso.","Cotovelos junto ao corpo; quem gira a corda é o punho, não o ombro.","Ritmo constante. Se errar, retoma sem parar o cronômetro."],c:"Se a panturrilha ou o tornozelo reclamarem, troque por polichinelo sem impacto (step lateral)."},
+"Malabarismo livre":{p:["Claves, bolinhas ou beanbags — o que estiver à mão.","Sem meta de performance: é aquecimento neuromuscular e descompressão mental.","Se quiser dirigir: comece com cascata de 3 e vá subindo o desafio conforme aquecer.","Alterne padrões que exijam olhar para cima — ajuda a soltar pescoço e ombros."],c:""},
+"Mobilidade articular geral":{p:["De cima para baixo, círculos lentos em cada articulação, 8 para cada lado:","Pescoço (só meio-círculos à frente, nunca rolando para trás) → ombros → cotovelos → punhos.","Tronco (rotações) → quadril (círculos grandes) → joelhos → tornozelos.","Amplitude crescente: os primeiros círculos pequenos, os últimos amplos."],c:""},
+"Gato-camelo":{p:["Quatro apoios: mãos sob os ombros, joelhos sob o quadril.","<b>Gato:</b> empurre o chão, arredonde a coluna para cima, queixo ao peito.","<b>Camelo:</b> solte a barriga, arqueie a coluna para baixo, olhar à frente.","Vá vértebra por vértebra, 3s em cada direção. Uma ida e volta = 1 repetição.","Respire: solta o ar no gato, puxa no camelo."],c:"Se o punho incomodar em quatro apoios, apoie nos <b>antebraços</b> ou feche os punhos e apoie nos nós dos dedos."},
+"Dead hang na barra":{p:["Pegada na largura dos ombros, palmas para frente, braços totalmente estendidos.","Deixe o corpo pendurado e relaxado — ombros podem subir em direção às orelhas, tudo bem.","Pernas relaxadas ou levemente cruzadas atrás.","15s pendurado, desça e descanse 30s. Repita 3x."],c:"É o teste de tolerância do antebraço no dia. Se arder o cotovelo já nos primeiros segundos, <b>reduza o volume da sessão</b> antes de começar."},
+"Scapular pulls":{p:["Pendurado na barra, braços <b>retos</b> — eles não dobram em nenhum momento.","Sem dobrar o cotovelo, puxe os ombros para baixo, afastando as orelhas: o corpo sobe uns 3-5cm.","Segure 2s no topo. Solte devagar e volte a ficar pendurado solto.","8 repetições."],c:"É o exercício que ensina o ombro a <b>segurar carga</b> antes de qualquer trabalho aéreo. Se o cotovelo dobrar, virou barra fixa — reduza."},
+"Rotação externa com elástico":{p:["Elástico preso na altura do cotovelo. Cotovelo colado ao tronco, dobrado a 90°.","Uma toalha enrolada entre cotovelo e costela ajuda a manter a posição.","Gire o antebraço para fora, só até onde não doer.","Volte em 3s. Carga leve, 3x15."],c:"<b>Não pule este.</b> Parece o exercício mais fraco da sessão e é o mais importante dela a longo prazo para o seu ombro direito."},
+"Mobilidade de ombro e punho":{p:["<b>Ombro:</b> círculos amplos para trás 10x, depois passe um cabo de vassoura por cima da cabeça e volte (dislocates) 10x, mãos bem afastadas.","<b>Punho:</b> em quatro apoios, dedos apontando para frente, balance o peso para frente e para trás 10x.","Repita com os dedos apontando para você (10x) e com o dorso da mão no chão (10x, bem leve).","Termine com 10 círculos de punho em cada direção, punhos fechados."],c:"Nos apoios de punho, use <b>pouquíssimo peso</b>. Se incomodar, faça em pé empurrando as mãos uma contra a outra."},
+"Shadow boxing leve":{p:["Guarda alta, queixo baixo, pés na largura dos ombros, um à frente do outro.","Comece só com o deslocamento: passos curtos frente, trás, lados. Nunca cruze os pés.","Some jabs leves, depois combinações simples: jab-direto, jab-jab-cruzado.","Termine com esquivas e rolamentos de tronco.","Velocidade média, força mínima — é aquecimento."],c:""},
+"Wall slides no espaldar":{p:["De costas para a parede (ou espaldar), pés uns 20cm afastados dela.","Encoste lombar, costas e cabeça. Antebraços na parede, cotovelos a 90°, dorso das mãos encostado.","Deslize os braços para cima mantendo <b>tudo</b> encostado — mãos, antebraços, costas.","Suba só até onde conseguir sem descolar a lombar. Desça devagar. 10 repetições."],c:"Quase todo mundo descola a lombar e compensa. <b>Amplitude menor com tudo encostado vale muito mais</b> que subir alto trapaceando."},
+"Ativação de manguito rotador com elástico":{p:["Elástico bem leve — este é exercício de ativação, não de força.","<b>Rotação externa:</b> cotovelo colado ao corpo, 90°, gira o antebraço para fora. 15x.","<b>Rotação interna:</b> mesma posição, elástico do outro lado, gira para dentro. 15x.","Movimento lento, 2s para ir e 2s para voltar."],c:"Se você sente o <b>trapézio</b> trabalhando (ombro subindo em direção à orelha), o elástico está pesado demais."},
+"Falso apoio na argola":{p:["Argolas na altura do quadril. Segure uma em cada mão, braços estendidos ao lado do corpo.","Pés ficam no chão — você descarrega só parte do peso nas argolas.","Ombros <b>puxados para baixo</b>, longe das orelhas. Argolas coladas ao tronco.","Segure 10s. É aquecimento de ombro e escápula para o que vem depois."],c:""},
+"Alongamento de antebraço":{p:["Braço estendido à frente, cotovelo travado.","<b>Extensores:</b> palma para baixo, com a outra mão puxe a mão para baixo e para dentro. 30s.","<b>Flexores:</b> palma para cima, puxe os dedos para baixo. 30s.","Troque o braço. Alongamento suave — é aquecimento, não é o trabalho principal."],c:""},
+"Mobilidade escapular":{p:["Em pé, braços ao lado do corpo: eleve os dois ombros até as orelhas, puxe para trás, desça e volte à frente — círculos completos. 10 para trás, 10 para frente.","Depois, braços estendidos à frente: empurre as mãos longe (protração) e puxe as escápulas para trás (retração). 10x.","Termine com 10 elevações de escápula pendurado ou apoiado."],c:""},
+"Dead hang curto (teste do dia)":{p:["Pendure-se na barra por 10-15s, relaxado.","Não é treino — é diagnóstico. Preste atenção no que o cotovelo e o antebraço dizem.","<b>Tudo tranquilo:</b> siga a sessão como planejada.","<b>Ardência ou fisgada:</b> troque a barra fixa por remada na argola e reduza a carga do dia."],c:"Levar a sério este teste é o que evita perder duas semanas de treino por teimosia num dia só."},
+"Bike leve":{p:["Resistência baixa, cadência confortável (uns 60-70 rpm).","Objetivo é subir a temperatura e lubrificar joelho e quadril, não gastar energia.","Selim na altura certa: no ponto mais baixo do pedal, o joelho fica quase estendido.","Você deve conseguir conversar normalmente o tempo todo."],c:""},
+
+/* ---------- MOBILIDADE FINAL ---------- */
+"Alongamento de flexor de quadril (afundo com retroversão)":{p:["Ajoelhe uma perna no chão (use um tapete), a outra à frente dobrada a 90°.","<b>O detalhe que faz o exercício:</b> antes de avançar, contraia o glúteo da perna de trás e empurre o quadril para frente por baixo, como se fosse 'esconder o rabo'. Isso é a retroversão.","Só depois disso avance o quadril. Você vai sentir na frente da coxa e na virilha da perna de trás.","Segure 45s respirando. Troque o lado.","Para intensificar: levante o braço do mesmo lado da perna de trás e incline para o lado oposto."],c:"Sem a retroversão pélvica, você só arqueia a lombar e <b>não alonga nada</b>. Este é o erro mais comum deste alongamento."},
+"Isquiotibiais no espaldar":{p:["Apoie o calcanhar num degrau do espaldar, na altura do quadril ou mais baixo.","Perna estendida, pé relaxado. Costas <b>retas</b>.","Incline o tronco à frente girando pelo quadril, não curvando a coluna.","45s cada perna. Vá pela sensação de alongamento, não pela altura do degrau."],c:"Costas curvadas = você está alongando a lombar, não o isquiotibial. Prefira um <b>degrau mais baixo com as costas retas</b>."},
+"Piriforme (figura 4)":{p:["Deitado de costas, joelhos dobrados, pés no chão.","Cruze o tornozelo direito sobre o joelho esquerdo, formando um '4'.","Passe as mãos por trás da coxa esquerda e puxe em direção ao peito.","Você sente no glúteo do lado cruzado. 40s, depois troca.","Versão sentado: mesma figura 4, incline o tronco à frente."],c:"Mantenha o pé cruzado <b>flexionado</b> (dedos apontando para a canela) — protege o joelho."},
+"Mobilidade de tornozelo (joelho à parede)":{p:["De frente para a parede, pé a uns 10cm dela.","Sem levantar o calcanhar, avance o joelho até encostar na parede.","Encostou fácil? Afaste o pé 1cm e tente de novo. Vá afastando até o limite onde o calcanhar ainda fica colado.","Fique 30s pulsando levemente nessa distância máxima. Troque o pé."],c:"O calcanhar <b>não pode descolar</b> — se descolou, a repetição não conta. Compare os dois lados: costumam ser bem diferentes."},
+"Dorsal no espaldar":{p:["Segure um degrau do espaldar na altura do quadril com uma mão.","Recue o quadril e deixe o tronco cair, braço estendido, como se fizesse uma reverência de lado.","Gire levemente o tronco para o lado oposto ao braço que segura — é isso que pega o dorsal.","45s de cada lado."],c:""},
+"Ombro em extensão (mãos atrás no banco)":{p:["Sente no chão de costas para o banco. Mãos no banco atrás de você, dedos apontando para frente.","Deslize o quadril para longe do banco, deixando os braços irem para trás.","Peito aberto, ombros para baixo. Você sente na frente do ombro e no peitoral.","40s. Vá com calma na descida."],c:"<b>Cuidado no ombro direito.</b> Este é dos alongamentos que mais incomodam quem tem o ombro sensível — pare bem antes da dor e prefira menos amplitude por mais tempo."},
+"Extensão torácica sobre rolo":{p:["Rolo (ou uma toalha enrolada) atravessado nas costas, na altura das omoplatas.","Mãos atrás da cabeça, cotovelos apontando para frente. Quadril no chão.","Deixe a parte de cima das costas se abrir sobre o rolo, expirando. Volte.","Mude o rolo 2-3cm e repita em outra altura. 45s por posição."],c:"O movimento é na <b>coluna torácica</b> (meio das costas). Se sentir na lombar, o rolo escorregou para baixo demais."},
+"Flexores e extensores de antebraço":{p:["Braço estendido à frente, cotovelo travado — o cotovelo estendido é o que faz diferença aqui.","<b>Extensores:</b> palma para baixo, puxe a mão para baixo com a outra mão. 40s.","<b>Flexores:</b> palma para cima, puxe os dedos para trás. 40s.","Troque o braço."],c:"Depois de tecido ou de qualquer trabalho pesado de preensão, este alongamento é <b>obrigatório</b>. É o que evita acumular tensão no cotovelo semana após semana."},
+"Dead hang passivo (descompressão)":{p:["Pendure-se na barra completamente relaxado — deixe os ombros subirem em direção às orelhas.","Respire fundo e solte o ar longo, deixando o peso do corpo alongar a coluna e o dorsal.","20s, desça devagar (não pule). Duas vezes.","Se a pegada falhar antes do tempo, use uma alça ou apoie a ponta dos pés no chão."],c:""},
+"Rotação torácica (open book)":{p:["Deitado de lado, joelhos dobrados a 90° empilhados um sobre o outro. Braços estendidos à frente, palmas juntas.","Mantendo os joelhos colados (pode pôr um rolo entre eles), abra o braço de cima em arco, acompanhando com o olhar, até encostar do outro lado — como abrir um livro.","Respire fundo na posição aberta, 3s. Volte devagar.","8 de cada lado."],c:"Os <b>joelhos não podem sair do lugar</b>. Se saírem, a rotação foi para a lombar, e não é ali que você quer."},
+"Alongamento de deltoide posterior":{p:["Traga um braço cruzado na frente do peito, na horizontal.","Com a outra mão, puxe pelo <b>braço</b> (acima do cotovelo), nunca pela articulação do cotovelo.","Ombro do lado alongado para baixo, longe da orelha.","40s cada lado."],c:""},
+"Flexores e extensores de punho":{p:["Braço estendido, cotovelo travado.","Palma para baixo, puxe a mão para baixo: alonga a face de cima do antebraço. 40s.","Palma para cima, puxe os dedos para trás: alonga a face de baixo. 40s.","Termine com 10 círculos de punho em cada direção."],c:"Tração <b>suave</b> e constante. Nada de forçar até doer no punho."},
+"Panturrilha":{p:["De frente para a parede, uma perna atrás estendida, calcanhar no chão, pé apontando para frente.","Empurre a parede e avance o quadril até sentir na panturrilha da perna de trás. 30s.","Depois dobre levemente o joelho da perna de trás, mantendo o calcanhar no chão: agora pega o sóleo, mais fundo. 30s.","Troque a perna."],c:""},
+"Peitoral no batente (3 alturas de cotovelo)":{p:["Antebraço apoiado num batente de porta ou no espaldar. Gire o corpo para o lado oposto até sentir no peitoral.","<b>Cotovelo abaixo do ombro:</b> pega a parte de baixo do peitoral. 40s.","<b>Cotovelo na altura do ombro:</b> pega o meio. 40s.","<b>Cotovelo acima do ombro:</b> pega a parte de cima e a frente do ombro. 40s.","Troque o lado. As três alturas alongam fibras diferentes — por isso as três."],c:"<b>No ombro direito, a altura mais alta é a mais arriscada.</b> Faça-a por último, com menos rotação, e pule se incomodar."},
+"Sleeper stretch leve (ombro direito)":{p:["Deitado sobre o lado direito, ombro direito embaixo, braço à frente do corpo formando 90° com o tronco.","Cotovelo dobrado a 90°, antebraço apontando para o teto.","Com a mão esquerda, empurre <b>muito devagar</b> o antebraço direito em direção ao chão.","Pare no primeiro sinal de tensão — não de dor. Segure 30s."],c:"<b>Este é o alongamento mais fácil de exagerar de toda a rotina.</b> Pressão levíssima. Fisgada aguda significa parar na hora, não 'aguentar mais um pouco'."},
+"Alongamento de tríceps":{p:["Levante um braço, dobre o cotovelo levando a mão para trás da cabeça, entre as escápulas.","Com a outra mão, empurre o cotovelo suavemente para trás e para dentro.","Costelas para baixo — não arqueie a lombar para ganhar amplitude falsa.","30s cada braço."],c:""},
+"Extensor de antebraço":{p:["Braço estendido à frente, <b>cotovelo travado</b> (isso é essencial).","Palma virada para baixo. Com a outra mão, dobre o punho para baixo e leve os dedos em direção ao corpo.","Você sente na face de cima do antebraço, perto do cotovelo. 40s.","3 séries de cada lado."],c:"Este é o par do excêntrico de punho — o excêntrico fortalece, este devolve o comprimento. Fazer <b>os dois</b> é o que funciona."},
+"Flexor de antebraço":{p:["Braço estendido, cotovelo travado, palma virada para <b>cima</b>.","Com a outra mão, puxe os dedos para baixo e para trás.","Sente na face de baixo do antebraço. 40s.","3 séries de cada lado."],c:""},
+"Mobilidade de punho em quatro apoios":{p:["Quatro apoios, dedos apontando para frente. Balance o peso à frente e atrás, bem leve. 30s.","Gire as mãos com os dedos apontando <b>para você</b> e repita, com menos peso ainda. 30s.","Se estiver confortável, apoie o dorso das mãos no chão com carga mínima."],c:"Carga <b>mínima</b> — este é o movimento que mais incomoda punho sensível. Se doer em qualquer variação, faça só em pé, empurrando palma contra palma."},
+"Respiração longa deitado":{p:["Deitado de costas, joelhos dobrados, pés no chão. Uma mão no peito, outra na barriga.","Inspire pelo nariz em 4s, fazendo subir só a mão da <b>barriga</b>.","Segure 2s. Solte pela boca em 6-8s, bem devagar.","2 minutos. É o encerramento da sessão — baixa a frequência cardíaca e fecha o treino."],c:""},
+"Caminhada ou alongamento leve":{p:["Caminhada tranquila de 10-15 min, ou uma sequência solta de alongamentos no chão.","Sem meta, sem cronômetro, sem intensidade.","Se o corpo estiver pedindo movimento, isto basta."],c:"<b>Não conta como treino.</b> Resistir ao impulso de treinar hoje é o que sustenta os outros seis dias."},
+
+/* ---------- EXERCÍCIOS: PERNAS ---------- */
 "Afundo búlgaro (apoio no banco)":{p:["Pé de trás sobre o banco, cadarço apoiado. Pé da frente ~70cm à frente.","Desça vertical até o joelho de trás quase tocar o chão. Tronco levemente inclinado.","Empurre pelo calcanhar da perna da frente para subir.","Halteres nas mãos ou peso do corpo."],c:"Olhe se o quadril <b>cai</b> para o lado na descida. Se cair, reduza a carga. Filme de lado uma vez por mês."},
 "Agachamento na gaiola hack":{p:["Barra apoiada no trapézio, pés na largura dos ombros, pontas levemente abertas.","Inspire, trave o core, desça empurrando o quadril para trás.","Desça até coxa paralela ou até onde manter as costas neutras.","Suba empurrando o chão. Não deixe os joelhos colapsarem pra dentro."],c:"Sempre com os <b>suportes de segurança</b> regulados na altura mais baixa do movimento."},
 "RDL unilateral com halteres":{p:["Um halter na mão oposta à perna de apoio. Joelho de apoio levemente flexionado.","Incline o tronco à frente empurrando o quadril para trás, perna livre estendendo atrás.","Desça até sentir alongar o isquiotibial. Costas retas.","Volte contraindo glúteo."],c:"Quadril <b>nivelado</b> — não deixe o lado livre subir. Vá devagar, é exercício de controle."},
@@ -192,36 +244,40 @@ const INSTR = {
 "Agachamento assistido na argola":{p:["Argolas na altura do peito. Segure uma em cada mão, braços estendidos.","Recue até os braços ficarem esticados, sustentando parte do peso.","Agache o mais fundo que conseguir, calcanhares no chão, tronco ereto.","Use as argolas só o mínimo necessário para subir."],c:"O objetivo é <b>amplitude</b>, não carga. Sem peso extra. Ótimo para tornozelo e quadril."},
 "Panturrilha em pé (apoio no espaldar)":{p:["Ponta dos pés numa borda elevada, calcanhares livres.","Mãos no espaldar só para equilíbrio.","Desça o calcanhar até alongar, suba o máximo na ponta dos pés.","Pausa de 1s em cima."],c:""},
 
+/* ---------- EXERCÍCIOS: AÉREOS ---------- */
 "Tecido — subidas (russa ou francesa)":{p:["<b>Confira a ancoragem e o mosquetão antes de começar.</b> Crash mat embaixo.","Russa: pise no tecido cruzando os pés, suba pelas pernas puxando pouco com os braços.","Francesa: sem chave nos pés, mais exigente — só se o antebraço estiver 100%.","Desça controlado, nunca escorregando (queimadura).","Descanso completo entre subidas: 1-2 min."],c:"<b>Teto de 4-6 subidas.</b> Subida detona o antebraço, e o seu cotovelo depende dele o resto da semana. Conte e pare mesmo se estiver se sentindo bem."},
 "Tecido — footlock simples + figura básica":{p:["Chave de pé simples: enrole o tecido no peito do pé e trave com o outro pé.","Teste a chave com pouco peso antes de carregar.","Pratique entrar e sair da chave dos dois lados.","Figura básica com a chave montada (ex.: bandeira / arabesque baixo)."],c:"Trabalho <b>técnico</b>, baixo. Se cansar o antebraço, baixe a altura em vez de forçar."},
 "Tecido — invertida com apoio (crucifixo/casulo)":{p:["Comece com quadril baixo. Puxe os joelhos ao peito e role o quadril para trás.","Passe as pernas pelo tecido e monte a posição devagar.","Mantenha o tecido próximo ao corpo — quanto mais longe, mais braço.","Saia na mesma velocidade que entrou."],c:"<b>Nada dinâmico.</b> Nada de drops. Cabeça para baixo exige muito do ombro: entra devagar, sai devagar. Máximo 4-6 entradas."},
 "Argola — support hold (falso apoio → apoio)":{p:["Argolas na altura do quadril. Comece em FALSO apoio: pés no chão, descarregando parte do peso.","Braços estendidos e travados, ombros <b>puxados para baixo</b> (deprimidos), argolas coladas ao corpo.","Segure 10-20s sem tremer. Corpo em linha, glúteo contraído.","Só passe para apoio completo (pés fora do chão) após 3x20s limpos de falso apoio."],c:"Rotação das argolas para fora (RTO) fica para <b>depois</b> — é muito exigente para o seu ombro direito. Nada de tremor descontrolado: se tremer muito, volte ao falso apoio."},
-"Argola — remada horizontal":{p:["Argolas na altura do quadril. Deite sob elas, corpo em linha, calcanhares no chão.","Puxe o peito em direção às argolas, cotovelos rentes ao corpo.","Aperte as escápulas no topo. Desça controlado em 2-3s.","Ajuste a dificuldade mudando o ângulo do corpo: mais horizontal = mais difícil."],c:"Pegada <b>neutra</b>, deixe as argolas girarem. Essa rotação livre é justamente o que protege seu cotovelo."},
+"Argola — remada horizontal":{p:["Argolas na altura do quadril. Deite sob elas, corpo em linha, calcanhares no chão.","Puxe o peito em direção às argolas, cotovelos rentes ao corpo.","Aperte as escápulas no topo. Desça controlado em 2-3s.","Ajuste a dificuldade mudando o ângulo do corpo: mais horizontal = mais difícil."],c:"Pegada <b>neutra</b>, deixe as argolas girarem. Essa rotação livre é justamente o que poupa seu cotovelo."},
 "Hollow body hold":{p:["Deitado de costas, lombar colada no chão (sem vão).","Levante escápulas e pernas, braços estendidos acima da cabeça.","Se for difícil, dobre os joelhos ou deixe os braços ao lado do corpo.","Respire — não prenda o ar."],c:"Se a <b>lombar descolar</b> do chão, a série acabou. Suba as pernas para facilitar."},
 "Tuck hold nas argolas":{p:["A partir do support hold ou pendurado nas argolas.","Puxe os joelhos em direção ao peito, quadril em retroversão.","Segure 3-5s por rep, ou mantenha estático.","Desça controlado, sem balançar."],c:""},
 
-"Speedball (pera)":{p:["Pera na altura da testa. Cotovelos altos, mãos próximas ao rosto.","Golpeie com a lateral do punho fechado, ritmo constante.","Três batidas por golpe (frente-trás-frente), depois alterne as mãos.","Comece devagar buscando ritmo, não força."],c:"Sem restrição para o seu punho — este é o seu exercício de boxe mais seguro."},
-"Saco de pancada":{p:["Bandagem e luvas, sempre.","Punho <b>alinhado</b> com o antebraço no impacto — nunca dobrado.","Trabalhe combinações e precisão: jab-direto, jab-jab-cruzado, esquiva.","Gire o quadril, o soco vem do chão, não do braço."],c:"<b>Modere a força de impacto</b> — punho é ponto sensível seu. Qualquer incômodo, pare o saco e siga só no speedball."},
+/* ---------- EXERCÍCIOS: BOXE ---------- */
+"Speedball (pera)":{p:["Pera na altura da testa. Cotovelos altos, mãos próximas ao rosto.","Golpeie com a lateral do punho fechado, ritmo constante.","Três batidas por golpe (frente-trás-frente), depois alterne as mãos.","Comece devagar buscando ritmo, não força."],c:"Este é o seu exercício de boxe mais seguro — sem restrição de punho."},
+"Saco de pancada":{p:["Bandagem e luvas, sempre.","Punho <b>alinhado</b> com o antebraço no impacto — nunca dobrado.","Trabalhe combinações e precisão: jab-direto, jab-jab-cruzado, esquiva.","Gire o quadril, o soco vem do chão, não do braço."],c:"<b>Modere a força de impacto</b> — alinhamento do punho vale mais que potência. Qualquer incômodo, pare o saco e siga só no speedball."},
 "Core: prancha + rotação de tronco":{p:["Prancha: antebraços sob os ombros, corpo em linha, glúteo contraído. 3x45s.","Rotação: sentado, joelhos dobrados, gire o tronco tocando o chão dos dois lados.","Alterne prancha e rotação até completar o bloco.","Prancha lateral opcional: 2x30s cada lado."],c:""},
 
+/* ---------- EXERCÍCIOS: PUSH ---------- */
 "Supino reto/inclinado":{p:["Escápulas retraídas e deprimidas no banco, pés firmes no chão.","Desça a barra até a linha do mamilo (reto) ou clavícula (inclinado), controlado.","Cotovelos a ~45° do tronco, não abertos a 90°.","Suba sem travar o cotovelo bruscamente."],c:"<b>Ombro direito:</b> se fisgar no fundo do movimento, reduza a amplitude ou passe a halteres. Não insista na dor."},
 "Desenvolvimento sentado com halteres":{p:["Sentado no banco reclinável (encosto quase vertical), costas apoiadas.","Halteres na altura das orelhas, palmas à frente ou neutras.","Suba sem travar o cotovelo. Não deixe a lombar arquear.","Desça controlado até a altura da orelha."],c:"<b>Palma neutra</b> (uma de frente pra outra) costuma ser mais confortável para o seu ombro direito. Nada de balístico."},
 "Flexão nas argolas (argolas baixas)":{p:["Argolas na altura do quadril (mais alto = mais fácil). Corpo em linha.","Desça o peito entre as argolas, cotovelos a ~45°.","Suba estabilizando — vai tremer no começo, é normal.","Vá baixando as argolas conforme ganhar controle."],c:"Punho <b>neutro</b> e rotação livre: melhor que parallettes para o seu punho e o seu cotovelo. Espere ser bem mais difícil que a flexão no chão."},
 "Argola — support hold":{p:["Argolas na altura do quadril. Braços estendidos, ombros deprimidos.","Corpo em linha, glúteo contraído, argolas coladas ao tronco.","Segure 15-25s. Progrida de falso apoio para apoio completo."],c:"Sem RTO por enquanto. Se o ombro direito reclamar, volte ao falso apoio."},
-"Elevação lateral leve":{p:["Halteres leves ao lado do corpo, cotovelo levemente flexionado.","Suba até a altura do ombro, não acima.","Mindinho levemente mais alto que o polegar? Não — mantenha neutro, é mais seguro para o ombro.","Desça em 3s."],c:"Carga <b>leve</b>. Não passar da linha do ombro. Se precisar de impulso, o peso está alto."},
+"Elevação lateral leve":{p:["Halteres leves ao lado do corpo, cotovelo levemente flexionado.","Suba até a altura do ombro, não acima.","Mantenha o punho neutro (nem girado para cima, nem para baixo).","Desça em 3s."],c:"Carga <b>leve</b>. Não passar da linha do ombro. Se precisar de impulso, o peso está alto."},
 "Tríceps":{p:["Testa (com barra pequena) ou corda/elástico no espaldar.","Cotovelos fixos apontando à frente, só o antebraço se move.","Estenda completo sem travar bruscamente.","Desça em 2-3s."],c:"Se o <b>cotovelo</b> incomodar, troque a versão na testa por extensão com elástico, que tem menos carga no fundo."},
-"Rotação externa com elástico":{p:["Elástico preso na altura do cotovelo. Cotovelo colado ao tronco, dobrado a 90°.","Uma toalha enrolada entre cotovelo e costela ajuda a manter a posição.","Gire o antebraço para fora, só até onde não doer.","Volte em 3s. Carga leve, 3x15."],c:"<b>REAB — não pule.</b> Parece o exercício mais fraco da sessão e é o mais importante dela a longo prazo para o seu ombro direito."},
 
+/* ---------- EXERCÍCIOS: PULL ---------- */
 "Remada nas argolas (corpo inclinado)":{p:["Argolas na altura do quadril, corpo inclinado sob elas, calcanhares no chão.","Pegada neutra. Puxe o peito às argolas, cotovelos rentes ao corpo.","Aperte as escápulas 1s no topo. Desça em 2-3s.","Mais horizontal = mais difícil. É assim que você progride."],c:"A rotação livre da argola <b>poupa o cotovelo</b> — reduz o torque na inserção dos tendões em relação à barra fixa."},
 "Remada curvada (pegada neutra ou pronada)":{p:["Quadril para trás, tronco a ~45°, costas neutras e travadas.","Puxe a barra ao umbigo, cotovelos rentes ao corpo.","Aperte escápulas no topo, desça em 2-3s.","Pegada neutra (halteres) ou pronada — nunca supinada pesada."],c:"<b>Evite supinada pesada:</b> é a pegada que mais castiga a face interna do cotovelo. Se a lombar cansar antes das costas, reduza a carga."},
-"Barra fixa / puxada assistida com elástico":{p:["Elástico no pé ou joelho para assistir. Pegada na largura dos ombros.","Comece com escápulas deprimidas (puxe os ombros para baixo antes de dobrar o cotovelo).","Puxe até o queixo passar a barra. Desça controlado em 3s.","Alternativa: fazer nas argolas, com pegada rotando livre."],c:"Se o <b>cotovelo</b> reclamar da barra fixa, troque por mais séries de remada na argola. Não force barra fixa com dor no cotovelo."},
+"Barra fixa / puxada assistida com elástico":{p:["Elástico no pé ou joelho para assistir. Pegada na largura dos ombros.","Comece com escápulas deprimidas (puxe os ombros para baixo antes de dobrar o cotovelo).","Puxe até o queixo passar a barra. Desça controlado em 3s.","Alternativa: fazer nas argolas, com pegada rotando livre."],c:"Se o <b>cotovelo</b> reclamar da barra fixa, troque por mais séries de remada na argola. Não force com dor."},
 "Face pull com elástico":{p:["Elástico na altura do rosto, preso no espaldar ou na gaiola.","Puxe em direção à testa, separando as mãos, cotovelos altos.","Termine com as mãos ao lado das orelhas, escápulas apertadas.","Volte em 3s."],c:"Serve <b>ombro e cotovelo</b> ao mesmo tempo. Carga leve, muita qualidade."},
 "Rosca direta leve":{p:["Barra pequena ou halteres. Cotovelo colado ao tronco.","Suba controlado, sem balançar o corpo.","Desça em 3s — a fase excêntrica é a que importa aqui.","Carga leve. Rosca martelo (neutra) é alternativa mais amigável ao cotovelo."],c:"<b>Sem dor.</b> Se doer o cotovelo, troque por rosca martelo ou reduza para metade da carga."},
-"Excêntrico de punho (extensor e flexor)":{p:["<b>Extensor:</b> antebraço apoiado no banco, palma para BAIXO, peso leve na mão.","Suba o punho com AJUDA da outra mão. Solte a ajuda e desça sozinho em 3-4s.","<b>Flexor:</b> mesma coisa com a palma para CIMA.","3x12 de cada. Peso muito leve — 1 a 2kg é suficiente no começo."],c:"<b>O exercício mais importante da sua semana.</b> É o protocolo que efetivamente recupera o tendão, não só evita piora. Desconforto leve é esperado; dor aguda = reduzir carga, nunca pular."},
+"Excêntrico de punho (extensor e flexor)":{p:["<b>Extensor:</b> antebraço apoiado no banco, palma para BAIXO, peso leve na mão.","Suba o punho com AJUDA da outra mão. Solte a ajuda e desça sozinho em 3-4s.","<b>Flexor:</b> mesma coisa com a palma para CIMA.","3x12 de cada. Peso muito leve — 1 a 2kg é suficiente no começo."],c:"<b>O exercício mais importante da sua semana.</b> É o que mantém o tendão saudável a longo prazo, não só evita piora. Desconforto leve é esperado; dor aguda = reduzir carga, nunca pular."},
 
-"Bike ergométrica intervalada":{p:["15 min: alterne 1 min forte (resistência alta / RPE 8) com 1 min leve.","No minuto forte, mantenha cadência acima de 80rpm.","No minuto leve, não pare — pedale solto.","Ajuste o selim: joelho quase estendido no ponto mais baixo."],c:"Baixo impacto — bom para a sua assimetria de pernas. Observe se um pé empurra muito mais que o outro."},
+/* ---------- EXERCÍCIOS: CARDIO ---------- */
+"Bike ergométrica intervalada":{p:["15 min: alterne 1 min forte (resistência alta / RPE 8) com 1 min leve.","No minuto forte, mantenha cadência acima de 80rpm.","No minuto leve, não pare — pedale solto.","Ajuste o selim: joelho quase estendido no ponto mais baixo."],c:"Baixo impacto articular. Observe se um pé empurra bem mais que o outro e tente equilibrar."},
 "Circuito funcional (3 voltas, 40s/20s)":{p:["Remada na argola — 40s","Agachamento com elástico — 40s","Prancha — 40s","Mountain climbers — 40s","Flexão na argola alta — 40s","20s de descanso entre exercícios, 90s entre voltas."],c:"Se cotovelo, ombro ou pernas estiverem cansados da semana, <b>corte o circuito</b> e fique na bike + flexibilidade. Um dos seis dias precisa ser negociável."},
-"Bloco de flexibilidade dirigida":{p:["Ombro/extensão no espaldar ou banco (cuidado no direito)","Extensão torácica sobre rolo","Meio-split progressivo, cada lado","Pancake / adutores","Ponte com apoio no espaldar","<b>Em cada posição:</b> 45s alongando + 10-15s de contração isométrica DENTRO da amplitude final + relaxar e ganhar 2-3cm. Repetir 2x."],c:"A contração isométrica no fim da amplitude é o que separa <b>alcançar</b> de <b>usar</b> a amplitude. Anote onde chegou e compare mês a mês, não semana a semana."}
+"Bloco de flexibilidade dirigida":{p:["Ombro/extensão no espaldar ou banco (cuidado no direito)","Extensão torácica sobre rolo","Meio-split progressivo, cada lado","Pancake / adutores (sentado, pernas bem abertas, tronco à frente)","Ponte com apoio no espaldar","<b>Em cada posição:</b> 45s alongando + 10-15s de contração isométrica DENTRO da amplitude final + relaxar e ganhar 2-3cm. Repetir 2x."],c:"A contração isométrica no fim da amplitude é o que separa <b>alcançar</b> de <b>usar</b> a amplitude. Anote onde chegou e compare mês a mês, não semana a semana."}
 };
 
 /* =========================================================
@@ -229,24 +285,38 @@ const INSTR = {
    ========================================================= */
 const R = {
 1:{nome:"Segunda",foco:"Pernas & Quadril",
-  por:"Você tem assimetria entre as pernas. Trabalho unilateral fortalece estabilizadores de quadril (glúteo médio) e melhora o controle — não corrige a diferença, dá suporte a ela.",
-  aq:"90/90 • leg swings • monster walk e clamshell com elástico • corda de pular 2 min",
-  mob:"Flexor de quadril (lunge com retroversão pélvica) 2x45s cada • isquiotibiais no espaldar 2x45s cada • piriforme 2x40s cada • tornozelo (joelho à parede) 2x30s cada",
+  por:"Trabalho unilateral fortalece os estabilizadores de quadril (glúteo médio) e obriga cada lado a trabalhar sozinho — o que o trabalho bilateral esconde. Depois vem a base bilateral, com carga.",
   dica:"Grave um vídeo lateral dos afundos de vez em quando e veja se o quadril cai de um lado. Se cair, reduza a carga antes de aumentar. O agachamento na argola é seu novo melhor amigo de amplitude — a mão apoiada tira o medo de cair pra trás e você desce muito mais fundo.",
+  aq:[
+  {n:"90/90 (rotação de quadril)",s:"2 x 8 cada lado"},
+  {n:"Leg swings (balanço de perna)",s:"10 frente-trás + 10 lateral, cada perna"},
+  {n:"Monster walk com elástico",s:"2 x 12 passos cada direção"},
+  {n:"Clamshell com elástico",s:"2 x 15 cada lado"},
+  {n:"Corda de pular",s:"2 min, leve"}],
   ex:[
   {n:"Afundo búlgaro (apoio no banco)",s:"3 x 10 cada perna",o:"Unilateral primeiro, cabeça fresca",w:1},
   {n:"Agachamento na gaiola hack",s:"4 x 8",o:"Base bilateral, carga moderada",w:1},
   {n:"RDL unilateral com halteres",s:"3 x 8 cada perna",o:"Hip hinge + propriocepção",w:1},
   {n:"Elevação pélvica (hip thrust) com barra",s:"3 x 12",o:"Glúteo e posterior",w:1},
   {n:"Agachamento assistido na argola",s:"3 x 12",o:"Amplitude, sem carga extra",w:0,novo:1},
-  {n:"Panturrilha em pé (apoio no espaldar)",s:"3 x 15",o:"",w:1}]},
+  {n:"Panturrilha em pé (apoio no espaldar)",s:"3 x 15",o:"",w:1}],
+  mob:[
+  {n:"Alongamento de flexor de quadril (afundo com retroversão)",s:"2 x 45s cada lado"},
+  {n:"Isquiotibiais no espaldar",s:"2 x 45s cada lado"},
+  {n:"Piriforme (figura 4)",s:"2 x 40s cada lado"},
+  {n:"Mobilidade de tornozelo (joelho à parede)",s:"2 x 30s cada lado"}]},
 
 2:{nome:"Terça",foco:"Aéreos — Tecido & Argolas",
   por:"Dia que ataca direto o objetivo circense, agora com o equipamento instalado. É o dia de maior demanda de preensão da semana — por isso vem depois de um dia de perna, com antebraço descansado.",
-  aq:"Malabarismo livre 3 min • mobilidade articular geral • gato-camelo • dead hang 3x15s • scapular pulls 2x8 • rotação externa com elástico 2x15",
-  mob:"Dorsal no espaldar 2x45s cada • ombro em extensão 2x40s • extensão torácica sobre rolo 2x45s • flexores e extensores de antebraço 2x40s cada (obrigatório) • dead hang passivo 2x20s",
   dica:"A tentação na primeira semana vai ser subir dez vezes só pela alegria de ter o brinquedo em casa. Não faça. O antebraço é o gargalo de todo o seu treino de tronco — ele aparece na terça, quinta, sexta e sábado. Estourar ele hoje custa a semana inteira. Conte as subidas e pare no número, mesmo se estiver se sentindo ótimo.",
   alerta:"Confira ancoragem, mosquetão e costura antes de cada sessão. Crash mat embaixo do tecido sempre. Avise alguém que você vai treinar aéreo e deixe o celular no tatame. Nada de drops ou movimentos dinâmicos.",
+  aq:[
+  {n:"Malabarismo livre",s:"3 min"},
+  {n:"Mobilidade articular geral",s:"3 min"},
+  {n:"Gato-camelo",s:"2 x 10"},
+  {n:"Dead hang na barra",s:"3 x 15s"},
+  {n:"Scapular pulls",s:"2 x 8"},
+  {n:"Rotação externa com elástico",s:"2 x 15 cada braço"}],
   ex:[
   {n:"Tecido — subidas (russa ou francesa)",s:"4 a 6 subidas no total",o:"TETO RÍGIDO. Descanso completo entre subidas",w:0,novo:1},
   {n:"Tecido — footlock simples + figura básica",s:"15 min de prática",o:"Técnico, baixa carga de antebraço",w:0,novo:1},
@@ -254,23 +324,38 @@ const R = {
   {n:"Argola — support hold (falso apoio → apoio)",s:"4 x 10-20s",o:"Progressão-chave. Ombro deprimido",w:0,novo:1},
   {n:"Argola — remada horizontal",s:"3 x 10",o:"Ângulo do corpo regula a carga",w:0,novo:1},
   {n:"Hollow body hold",s:"3 x 30-45s",o:"Core circense",w:0},
-  {n:"Tuck hold nas argolas",s:"3 x 8-10",o:"Compressão de quadril",w:0}]},
+  {n:"Tuck hold nas argolas",s:"3 x 8-10",o:"Compressão de quadril",w:0}],
+  mob:[
+  {n:"Dorsal no espaldar",s:"2 x 45s cada lado"},
+  {n:"Ombro em extensão (mãos atrás no banco)",s:"2 x 40s"},
+  {n:"Extensão torácica sobre rolo",s:"2 x 45s"},
+  {n:"Flexores e extensores de antebraço",s:"2 x 40s cada — obrigatório hoje"},
+  {n:"Dead hang passivo (descompressão)",s:"2 x 20s"}]},
 
 3:{nome:"Quarta",foco:"Boxe & Cardio",
-  por:"Cardio de alta queima, coordenação e alívio de estresse, respeitando o seu punho. Também é o dia de descarga do antebraço entre terça e quinta.",
-  aq:"Corda 3 min • mobilidade de ombro e punho • shadow boxing leve",
-  mob:"Rotação torácica (open book) 2x8 cada • deltoide posterior 2x40s cada • flexores e extensores de punho 2x40s cada • panturrilha 2x30s",
-  dica:"Bandagem e luvas sempre. Treine para acertar limpo, não para bater forte — pense em combinações e precisão. Qualquer incômodo no punho, pare o saco e siga só no speedball, que não tem restrição pra você.",
+  por:"Cardio de alta queima, coordenação e alívio de estresse. Também é o dia de descarga do antebraço entre terça e quinta.",
+  dica:"Bandagem e luvas sempre. Treine para acertar limpo, não para bater forte — pense em combinações e precisão. Qualquer incômodo no punho, pare o saco e siga só no speedball.",
+  aq:[
+  {n:"Corda de pular",s:"3 min"},
+  {n:"Mobilidade de ombro e punho",s:"3 min"},
+  {n:"Shadow boxing leve",s:"2 min"}],
   ex:[
   {n:"Speedball (pera)",s:"4 rounds x 2 min",o:"Ótimo para ombro, sem impacto no punho",w:0},
   {n:"Saco de pancada",s:"5 rounds x 2 min (1 min descanso)",o:"Técnica e precisão, não potência",w:0},
-  {n:"Core: prancha + rotação de tronco",s:"8 min",o:"",w:0}]},
+  {n:"Core: prancha + rotação de tronco",s:"8 min",o:"",w:0}],
+  mob:[
+  {n:"Rotação torácica (open book)",s:"2 x 8 cada lado"},
+  {n:"Alongamento de deltoide posterior",s:"2 x 40s cada"},
+  {n:"Flexores e extensores de punho",s:"2 x 40s cada"},
+  {n:"Panturrilha",s:"2 x 30s cada"}]},
 
 4:{nome:"Quinta",foco:"Push + Ombro",
-  por:"Hipertrofia de empurrar combinada com o protocolo de fortalecimento do ombro direito. As argolas entram como opção de punho neutro.",
-  aq:"Wall slides no espaldar • ativação de manguito rotador com elástico leve • falso apoio na argola 2x10s",
-  mob:"Peitoral no batente (3 alturas de cotovelo) 2x40s cada • extensão torácica sobre rolo 2x45s • sleeper stretch leve no ombro direito 2x30s • tríceps 2x30s cada",
+  por:"Hipertrofia de empurrar combinada com o trabalho dirigido de ombro. As argolas entram como opção de punho neutro.",
   dica:"Técnica antes de ego, principalmente no ombro direito — fisgada no supino significa reduzir amplitude ou mudar ângulo, não insistir. A flexão nas argolas vai parecer absurdamente mais difícil que no chão nas primeiras semanas; isso é normal e é o custo da estabilização. Comece com as argolas na altura do quadril e vá baixando.",
+  aq:[
+  {n:"Wall slides no espaldar",s:"2 x 10"},
+  {n:"Ativação de manguito rotador com elástico",s:"2 x 15 cada braço"},
+  {n:"Falso apoio na argola",s:"2 x 10s"}],
   ex:[
   {n:"Supino reto/inclinado",s:"4 x 8",o:"ROM confortável, sem dor no ombro direito",w:1},
   {n:"Desenvolvimento sentado com halteres",s:"3 x 8",o:"Sentado reduz instabilidade",w:1},
@@ -278,42 +363,58 @@ const R = {
   {n:"Argola — support hold",s:"3 x 15-25s",o:"Progressão continuada da terça",w:0,novo:1},
   {n:"Elevação lateral leve",s:"3 x 15",o:"Deltoide médio, baixo impacto",w:1},
   {n:"Tríceps",s:"3 x 12",o:"",w:1},
-  {n:"Rotação externa com elástico",s:"3 x 15",o:"REAB — não pular",w:0,reab:1}]},
+  {n:"Rotação externa com elástico",s:"3 x 15",o:"ESSENCIAL — não pular",w:0,reab:1}],
+  mob:[
+  {n:"Peitoral no batente (3 alturas de cotovelo)",s:"2 x 40s cada altura"},
+  {n:"Extensão torácica sobre rolo",s:"2 x 45s"},
+  {n:"Sleeper stretch leve (ombro direito)",s:"2 x 30s"},
+  {n:"Alongamento de tríceps",s:"2 x 30s cada"}]},
 
 5:{nome:"Sexta",foco:"Pull + Cotovelo",
   por:"Hipertrofia de puxar combinada com o protocolo excêntrico de punho. As argolas mudam este dia: a rotação livre reduz o estresse na inserção dos tendões do cotovelo em relação à barra fixa.",
-  aq:"Alongamento de antebraço • mobilidade escapular • dead hang curto 10-15s para testar a tolerância do dia",
-  mob:"Dorsal no espaldar 2x45s cada • extensor de antebraço (cotovelo estendido, punho flexionado) 3x40s cada • flexor de antebraço 3x40s cada • punho em quatro apoios, leve, 2x30s",
-  dica:"O excêntrico de punho continua sendo o exercício mais importante da sexta — é o que realmente recupera o tendão, não só evita piora. Desconforto leve é esperado; dor aguda significa reduzir carga, nunca pular a série. Se a terça de tecido tiver sido pesada no antebraço, troque a barra fixa por mais remada nas argolas e siga em frente.",
+  dica:"O excêntrico de punho é o exercício mais importante da sexta. Desconforto leve é esperado; dor aguda significa reduzir carga, nunca pular a série. Se a terça de tecido tiver sido pesada no antebraço, troque a barra fixa por mais remada nas argolas e siga em frente.",
+  aq:[
+  {n:"Alongamento de antebraço",s:"2 x 30s cada"},
+  {n:"Mobilidade escapular",s:"2 x 10"},
+  {n:"Dead hang curto (teste do dia)",s:"1 x 10-15s"}],
   ex:[
   {n:"Remada nas argolas (corpo inclinado)",s:"4 x 10",o:"Pegada neutra, rotação livre",w:0,novo:1},
   {n:"Remada curvada (pegada neutra ou pronada)",s:"3 x 8",o:"Evitar supinada pesada",w:1},
   {n:"Barra fixa / puxada assistida com elástico",s:"3 x 5-8",o:"Nas argolas se o cotovelo reclamar",w:0},
   {n:"Face pull com elástico",s:"3 x 15",o:"Serve ombro e cotovelo",w:0},
   {n:"Rosca direta leve",s:"3 x 12",o:"Sem dor",w:1},
-  {n:"Excêntrico de punho (extensor e flexor)",s:"3 x 12 cada",o:"Descida 3-4s, subida com ajuda da outra mão",w:1,reab:1}]},
+  {n:"Excêntrico de punho (extensor e flexor)",s:"3 x 12 cada",o:"ESSENCIAL — descida 3-4s",w:1,reab:1}],
+  mob:[
+  {n:"Dorsal no espaldar",s:"2 x 45s cada lado"},
+  {n:"Extensor de antebraço",s:"3 x 40s cada"},
+  {n:"Flexor de antebraço",s:"3 x 40s cada"},
+  {n:"Mobilidade de punho em quatro apoios",s:"2 x 30s, bem leve"}]},
 
 6:{nome:"Sábado",foco:"Cardio & Flexibilidade",
   por:"Maior volume de cardio de baixo impacto e o bloco grande de flexibilidade, que saiu da terça para dar lugar aos aéreos. Faz sentido aqui: intensidade baixa e corpo aquecido.",
-  aq:"Bike leve 3 min + malabarismo 3 min",
-  mob:"O bloco 3 já é a mobilidade do dia. Finalize com respiração longa deitado, 2 min.",
   dica:"Este é o dia de autorregular. Se cotovelo, ombro ou pernas estiverem cansados da semana, corte o circuito, alongue mais e fique na bike. Seis dias por semana aos 48 só funciona se um deles for negociável.",
+  aq:[
+  {n:"Bike leve",s:"3 min"},
+  {n:"Malabarismo livre",s:"3 min"}],
   ex:[
   {n:"Bike ergométrica intervalada",s:"15 min (1 forte / 1 leve)",o:"Cardio principal",w:0},
   {n:"Circuito funcional (3 voltas, 40s/20s)",s:"3 voltas",o:"Baixo impacto axial",w:0},
-  {n:"Bloco de flexibilidade dirigida",s:"22 min",o:"45s + isometria em amplitude final",w:0}]},
+  {n:"Bloco de flexibilidade dirigida",s:"22 min",o:"45s + isometria em amplitude final",w:0}],
+  mob:[
+  {n:"Respiração longa deitado",s:"2 min"}]},
 
 0:{nome:"Domingo",foco:"Descanso",
   por:"Descanso é parte do treino, não ausência dele. É quando a adaptação acontece.",
-  aq:"—",
-  mob:"Opcional: 10-15 min de alongamento leve ou caminhada",
-  dica:"Não conta como treino. Se você chegou aqui com o corpo pedindo movimento, uma caminhada resolve — resistir ao impulso de treinar hoje é o que sustenta os outros seis dias.",
-  ex:[]}
+  dica:"Se você chegou aqui com o corpo pedindo movimento, uma caminhada resolve. Resistir ao impulso de treinar hoje é o que sustenta os outros seis dias.",
+  aq:[],
+  ex:[],
+  mob:[
+  {n:"Caminhada ou alongamento leve",s:"10-15 min, opcional"}]}
 };
 
 const DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 const K_HIST="treino_hist_v3", K_ACT="treino_active_v3", K_EXP="treino_lastexport_v3", K_DISM="treino_dismiss_v3";
-const APP_VERSION="1.0.1";
+const APP_VERSION="1.1.0";
 
 /* =========================================================
    ESTADO
@@ -404,11 +505,24 @@ function renderHist(){
 /* =========================================================
    SESSÃO
    ========================================================= */
+/* Lista achatada das etapas do dia, na ordem: aquecimento → exercícios → mobilidade.
+   O índice nessa lista é o mesmo índice usado em S.log e nos ids dos cartões. */
+const SECOES=[
+  {k:"aq", titulo:"Aquecimento"},
+  {k:"ex", titulo:"Exercícios"},
+  {k:"mob",titulo:"Mobilidade final"}
+];
+function etapas(d){
+  const day=R[d], out=[];
+  SECOES.forEach(sec=>(day[sec.k]||[]).forEach(it=>out.push(Object.assign({},it,{tipo:sec.k}))));
+  return out;
+}
+
 function startSession(d){
   if(load(K_ACT,null)&&!confirm("Já existe uma sessão em andamento. Descartar e começar outra?"))return;
   const day=R[d];
   S={day:d,nome:day.nome,foco:day.foco,start:Date.now(),acc:0,resumedAt:Date.now(),paused:false,pausas:0,
-     log:day.ex.map(e=>({n:e.n,done:false,reps:"",peso:""}))};
+     log:etapas(d).map(e=>({n:e.n,tipo:e.tipo,done:false,reps:"",peso:""}))};
   save(K_ACT,S); openSession();
 }
 function resumeSession(){
@@ -441,42 +555,53 @@ function openSession(){
 }
 
 function renderBody(){
-  const day=R[S.day];
+  const day=R[S.day], todas=etapas(S.day);
   let h="";
   h+='<div class="block"><div class="bt">Por que este dia</div><div class="bc">'+esc(day.por)+'</div></div>';
   if(day.alerta)h+='<div class="alert"><b>Segurança nos aéreos.</b> '+esc(day.alerta)+'</div>';
-  h+='<div class="block"><div class="bt">Aquecimento</div><div class="bc">'+esc(day.aq)+'</div></div>';
 
-  if(day.ex.length){
-    h+='<h2>Exercícios</h2>';
-    h+=day.ex.map((e,i)=>{
-      const l=S.log[i];
-      return '<div class="ex'+(l.done?" done":"")+(e.reab?" reab":"")+'" id="ex'+i+'">'
-        +'<div class="exhead"><span class="exnum">'+(i+1)+'</span><div style="flex:1">'
-        +(e.reab?'<span class="tag tag-reab">REAB</span>':'')+(e.novo?'<span class="tag tag-novo">NOVO</span>':'')
-        +'<span class="exname">'+esc(e.n)+'</span>'
-        +'<div class="exprescr">'+esc(e.s)+'</div>'
-        +(e.o?'<div class="exobs">'+esc(e.o)+'</div>':'')
-        +prevHint(e.n)
-        +'</div></div>'
-        +'<div class="exactions">'
-        +'<button class="btn-ghost" onclick="showInstr('+i+')">Como executar</button>'
-        +'<button class="'+(l.done?"btn-ghost":"btn-primary")+'" onclick="toggleDone('+i+')">'+(l.done?"Desfazer":"Concluir")+'</button>'
-        +'</div>'
-        +'<div class="logfields">'
-        +'<div class="field"><label>Reps na última série</label>'
-        +'<input type="number" inputmode="numeric" pattern="[0-9]*" placeholder="—" value="'+esc(l.reps)+'" oninput="setLog('+i+',\'reps\',this.value)"></div>'
-        +(e.w?'<div class="field"><label>Peso (kg)</label><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+esc(l.peso)+'" oninput="setLog('+i+',\'peso\',this.value)"></div>':'')
-        +'</div></div>';
-    }).join("");
-  } else {
+  if(!todas.length){
     h+='<div class="empty">Dia de descanso. Nada a registrar.</div>';
+  } else {
+    let i=0;
+    SECOES.forEach(sec=>{
+      const itens=day[sec.k]||[];
+      if(!itens.length){ return }
+      const base=i;
+      const feitos=itens.filter((_,k)=>S.log[base+k].done).length;
+      h+='<h2 id="sec-'+sec.k+'">'+sec.titulo
+        +' <span class="seccount'+(feitos===itens.length?" full":"")+'">'+feitos+'/'+itens.length+'</span></h2>';
+      h+=itens.map(e=>cardHTML(e,i++,sec.k)).join("");
+    });
   }
 
-  h+='<div class="block" style="margin-top:14px"><div class="bt">Mobilidade final</div><div class="bc">'+esc(day.mob)+'</div></div>';
   h+='<div class="tip"><b>Dica de personal.</b> '+esc(day.dica)+'</div>';
   document.getElementById("sessBody").innerHTML=h;
   updProgress();
+}
+
+function cardHTML(e,i,tipo){
+  const l=S.log[i], principal=(tipo==="ex");
+  return '<div class="ex'+(l.done?" done":"")+(e.reab?" reab":"")+(principal?"":" leve")+'" id="ex'+i+'" data-tipo="'+tipo+'">'
+    +'<div class="exhead"><span class="exnum">'+(i+1)+'</span><div style="flex:1">'
+    +(e.reab?'<span class="tag tag-reab">ESSENCIAL</span>':'')+(e.novo?'<span class="tag tag-novo">NOVO</span>':'')
+    +'<span class="exname">'+esc(e.n)+'</span>'
+    +'<div class="exprescr">'+esc(e.s)+'</div>'
+    +(e.o?'<div class="exobs">'+esc(e.o)+'</div>':'')
+    +(principal?prevHint(e.n):"")
+    +'</div></div>'
+    +'<div class="exactions">'
+    +'<button class="btn-ghost" onclick="showInstr('+i+')">Como executar</button>'
+    +'<button class="'+(l.done?"btn-ghost":"btn-primary")+'" onclick="toggleDone('+i+')">'+(l.done?"Desfazer":"Concluir")+'</button>'
+    +'</div>'
+    +(principal
+      ?'<div class="logfields">'
+        +'<div class="field"><label>Reps na última série</label>'
+        +'<input type="number" inputmode="numeric" pattern="[0-9]*" placeholder="—" value="'+esc(l.reps)+'" oninput="setLog('+i+',\'reps\',this.value)"></div>'
+        +(e.w?'<div class="field"><label>Peso (kg)</label><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+esc(l.peso)+'" oninput="setLog('+i+',\'peso\',this.value)"></div>':'')
+        +'</div>'
+      :"")
+    +'</div>';
 }
 
 function prevHint(name){
@@ -502,17 +627,29 @@ function toggleDone(i){
   b.textContent=S.log[i].done?"Desfazer":"Concluir";
   b.className=S.log[i].done?"btn-ghost":"btn-primary";
   if(S.log[i].done){const inp=el.querySelector(".logfields input");if(inp)setTimeout(()=>inp.focus(),80)}
-  updProgress();
+  updSecCounts(); updProgress();
 }
 function setLog(i,f,v){S.log[i][f]=v;save(K_ACT,S)}
+
+function updSecCounts(){
+  const day=R[S.day]; let i=0;
+  SECOES.forEach(sec=>{
+    const itens=day[sec.k]||[];
+    if(!itens.length)return;
+    const base=i, feitos=itens.filter((_,k)=>S.log[base+k].done).length;
+    const el=document.querySelector("#sec-"+sec.k+" .seccount");
+    if(el){ el.textContent=feitos+"/"+itens.length; el.classList.toggle("full",feitos===itens.length) }
+    i+=itens.length;
+  });
+}
 function updProgress(){
   const t=S.log.length,d=S.log.filter(l=>l.done).length;
-  document.getElementById("progressPill").textContent=t?d+" de "+t+" exercícios concluídos":"Dia de descanso";
+  document.getElementById("progressPill").textContent=t?d+" de "+t+" etapas concluídas":"Dia de descanso";
 }
 
 /* ---- Instruções ---- */
 function showInstr(i){
-  const e=R[S.day].ex[i], d=INSTR[e.n]||{p:["Instruções ainda não cadastradas para este exercício."],c:""};
+  const e=etapas(S.day)[i], d=INSTR[e.n]||{p:["Instruções ainda não cadastradas para este item."],c:""};
   document.getElementById("sheet").innerHTML='<div class="grab"></div>'
     +'<h3>'+esc(e.n)+'</h3><p class="shsub">'+esc(e.s)+'</p>'
     +'<ol>'+d.p.map(x=>'<li>'+x+'</li>').join("")+'</ol>'
@@ -564,12 +701,14 @@ function q(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'}
 function exportCSV(){
   const h=hist();
   if(!h.length)return alert("Nenhum treino para exportar ainda.");
-  const rows=[["data","hora_inicio","dia","foco","duracao_seg","duracao_hms","pausas","exercicio","concluido","reps_ultima_serie","peso_kg"]];
+  const TIPO={aq:"aquecimento",ex:"exercicio",mob:"mobilidade"};
+  const rows=[["data","hora_inicio","dia","foco","duracao_seg","duracao_hms","pausas","tipo","exercicio","concluido","reps_ultima_serie","peso_kg"]];
   h.forEach(s=>{
     const d=new Date(s.start);
     const dt=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
     const hh=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
-    s.log.forEach(l=>rows.push([dt,hh,s.nome,s.foco,Math.round(s.dur/1000),fmt(s.dur),s.pausas||0,l.n,l.done?"sim":"nao",l.reps||"",l.peso||""]));
+    s.log.forEach(l=>rows.push([dt,hh,s.nome,s.foco,Math.round(s.dur/1000),fmt(s.dur),s.pausas||0,
+      TIPO[l.tipo]||"exercicio",l.n,l.done?"sim":"nao",l.reps||"",l.peso||""]));
   });
   const csv="﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n");
   const fname="treino-historico-"+new Date().toISOString().slice(0,10)+".csv";
@@ -630,7 +769,9 @@ function importCSV(input){
             day:dayNum<0?1:dayNum,nome:r[ix("dia")],foco:r[ix("foco")],
             pausas:ix("pausas")>=0?(parseInt(r[ix("pausas")],10)||0):0,log:[]});
         }
+        const TREV={aquecimento:"aq",exercicio:"ex",mobilidade:"mob"};
         map.get(key).log.push({n:r[ix("exercicio")],done:r[ix("concluido")]==="sim",
+          tipo:ix("tipo")>=0?(TREV[r[ix("tipo")]]||"ex"):"ex",
           reps:ix("reps_ultima_serie")>=0?r[ix("reps_ultima_serie")]:"",
           peso:ix("peso_kg")>=0?r[ix("peso_kg")]:""});
       }

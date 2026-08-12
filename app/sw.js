@@ -1,13 +1,15 @@
 /* Service worker do app Treino.
    Ao publicar uma versão nova do app, mude VERSION — isso invalida o cache antigo. */
-const VERSION = "treino-v1.1.0";
+const VERSION = "treino-v1.2.0";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./data/juka.json",
+  "./data/perfil2.json"
 ];
 
 self.addEventListener("install", e => {

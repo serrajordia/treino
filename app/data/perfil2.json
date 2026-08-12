@@ -1,0 +1,136 @@
+{
+ "perfil": "perfil2",
+ "nomeExibicao": "Perfil 2",
+ "modo": "cicloAB",
+ "inicioCiclo": "2026-08-17",
+ "dias": {
+  "1": {"semana1": "A", "semana2": "B"},
+  "3": {"semana1": "B", "semana2": "A"},
+  "5": {"semana1": "A", "semana2": "B"}
+ },
+ "treinos": {
+  "A": {
+   "nome": "Treino A",
+   "foco": "Treino A — Agachamento & Supino",
+   "por": "Semana(s) de retorno ao treino de força após pausa. O objetivo aqui não é carga máxima — é reconstruir o padrão de movimento e a confiança antes de progredir peso.",
+   "dica": "O foco deste primeiro mês é reconstruir a força que já existia. A memória muscular faz o resto — não corra para cargas máximas. Progrida só quando completar todas as séries com boa técnica: agachamento +2kg, supino +1-2kg. Se alguma série vier com técnica ruim, repita o mesmo peso na próxima sessão em vez de subir.",
+   "aq": [],
+   "ex": [
+    {"n": "Agachamento", "s": "4 x 5", "o": "", "w": 1},
+    {"n": "Supino reto", "s": "4 x 5", "o": "", "w": 1},
+    {"n": "Remada curvada", "s": "4 x 6", "o": "", "w": 1},
+    {"n": "Afundo búlgaro", "s": "3 x 8 por perna", "o": "", "w": 1},
+    {"n": "Prancha", "s": "3 x 30-60s", "o": "", "w": 0}
+   ],
+   "mob": []
+  },
+  "B": {
+   "nome": "Treino B",
+   "foco": "Treino B — Terra & Desenvolvimento",
+   "por": "Semana(s) de retorno ao treino de força após pausa. Complementa o Treino A com padrões de dobradiça de quadril (terra) e empurrar vertical (desenvolvimento).",
+   "dica": "Mesma regra do Treino A: técnica antes de carga. Progrida só quando completar todas as séries com boa técnica: terra +2 a 5kg, desenvolvimento +1kg. O objetivo é voltar ao ritmo, não bater recorde.",
+   "aq": [],
+   "ex": [
+    {"n": "Levantamento terra", "s": "3 x 5", "o": "", "w": 1},
+    {"n": "Desenvolvimento militar", "s": "4 x 5", "o": "", "w": 1},
+    {"n": "Remada TRX", "s": "4 x 8", "o": "", "w": 0},
+    {"n": "Hip thrust", "s": "4 x 8", "o": "", "w": 1},
+    {"n": "Face pull no TRX", "s": "3 x 12", "o": "", "w": 0}
+   ],
+   "mob": []
+  }
+ },
+ "INSTR": {
+  "Agachamento": {
+   "p": [
+    "Barra apoiada no trapézio (não no pescoço), pés na largura dos ombros, pontas levemente abertas.",
+    "Inspire, trave o core, desça empurrando o quadril para trás e para baixo.",
+    "Desça até a coxa pelo menos paralela ao chão, joelhos na direção dos pés (sem colapsar para dentro).",
+    "Suba empurrando o chão com os pés, expirando na subida."
+   ],
+   "c": "Retorno recente: priorize técnica limpa sobre profundidade ou carga. Se a técnica falhar em alguma repetição, essa é a série que define o peso da próxima sessão — não suba."
+  },
+  "Supino reto": {
+   "p": [
+    "Deitado no banco, escápulas retraídas e apoiadas, pés firmes no chão.",
+    "Pegada um pouco mais aberta que os ombros. Barra desce até a linha do peito, cotovelos a ~45° do tronco.",
+    "Toque leve no peito, sem quicar.",
+    "Suba em linha reta até o travamento do cotovelo."
+   ],
+   "c": "Use um apoiador (spotter) ou os pinos de segurança se estiver treinando perto da carga máxima — principalmente voltando de pausa, quando a estimativa de carga pode estar desatualizada."
+  },
+  "Remada curvada": {
+   "p": [
+    "Quadril para trás, tronco a ~45°, joelhos levemente flexionados, costas neutras.",
+    "Puxe a barra em direção ao umbigo, cotovelos rentes ao corpo.",
+    "Aperte as escápulas no topo do movimento.",
+    "Desça controlado, sem deixar a lombar arredondar."
+   ],
+   "c": "Se a lombar cansar antes das costas, reduza a carga — a lombar não deveria ser o fator limitante aqui."
+  },
+  "Afundo búlgaro": {
+   "p": [
+    "Pé de trás apoiado sobre um banco, cadarço para baixo. Pé da frente ~60-70cm à frente.",
+    "Desça na vertical até o joelho de trás quase tocar o chão, tronco levemente inclinado à frente.",
+    "Empurre pelo calcanhar da perna da frente para subir.",
+    "Segure halteres ao lado do corpo para adicionar carga."
+   ],
+   "c": "Equilíbrio costuma ser o fator limitante no início, não força — é normal levar algumas sessões para estabilizar antes de adicionar peso."
+  },
+  "Prancha": {
+   "p": [
+    "Antebraços no chão sob os ombros, corpo em linha reta da cabeça ao calcanhar.",
+    "Glúteo e abdômen contraídos, sem deixar o quadril cair ou subir demais.",
+    "Respire normalmente durante a sustentação — não prenda o ar.",
+    "Se 30s já for desafiador, comece por aí e aumente o tempo a cada sessão."
+   ],
+   "c": ""
+  },
+  "Levantamento terra": {
+   "p": [
+    "Barra sobre o meio do pé, bem próxima às canelas. Pés na largura do quadril.",
+    "Dobre o quadril e os joelhos até segurar a barra, costas retas, peito aberto, olhar à frente.",
+    "Puxe a barra rente ao corpo o tempo todo, estendendo quadril e joelhos juntos.",
+    "No topo, quadril totalmente estendido, sem hiperextender a lombar para trás.",
+    "Desça controlado, revertendo o mesmo caminho — não solte a barra em queda livre."
+   ],
+   "c": "É o exercício mais técnico da dupla — priorize vídeo/espelho para checar a posição das costas, principalmente nas primeiras sessões de volta. Costas arredondando é o sinal para parar a série ali."
+  },
+  "Desenvolvimento militar": {
+   "p": [
+    "Em pé, barra ou halteres na altura dos ombros, pegada um pouco mais aberta que os ombros.",
+    "Core travado, glúteo contraído — não deixe a lombar arquear para compensar o peso.",
+    "Empurre para cima até o travamento do cotovelo, cabeça passando levemente por baixo da barra no topo.",
+    "Desça controlado até a posição inicial."
+   ],
+   "c": "Se sentir a lombar arqueando muito para levantar o peso, é sinal de carga alta demais para o momento — reduza."
+  },
+  "Remada TRX": {
+   "p": [
+    "Segure as alças, incline o corpo para trás mantendo-o reto da cabeça aos calcanhares.",
+    "Puxe o peito em direção às mãos, cotovelos rentes ao corpo, escápulas apertando no topo.",
+    "Desça controlado até os braços estendidos.",
+    "Ajuste a dificuldade pela inclinação: quanto mais próximo da horizontal, mais difícil."
+   ],
+   "c": "Regule a inclinação do corpo para terminar a série por volta da 8ª repetição com esforço, mas com técnica limpa."
+  },
+  "Hip thrust": {
+   "p": [
+    "Costas apoiadas num banco na altura das escápulas, barra sobre o quadril (use uma proteção/almofada).",
+    "Pés na largura do quadril, plantados, canela vertical no ponto mais alto do movimento.",
+    "Suba o quadril até tronco e coxas ficarem alinhados, contraindo o glúteo com força no topo.",
+    "Desça controlado sem tocar o chão entre as repetições."
+   ],
+   "c": "O movimento é do glúteo, não da lombar — evite hiperestender as costas no topo para 'ganhar' mais amplitude."
+  },
+  "Face pull no TRX": {
+   "p": [
+    "Segure as alças com as palmas voltadas uma para a outra, corpo inclinado para trás.",
+    "Puxe as mãos em direção ao rosto, separando-as no fim do movimento, cotovelos altos.",
+    "Aperte as escápulas no ponto final, ombros longe das orelhas.",
+    "Volte controlado até os braços estendidos."
+   ],
+   "c": "Bom exercício de saúde de ombro para fechar o treino B — priorize a contração das escápulas sobre a amplitude do braço."
+  }
+ }
+}

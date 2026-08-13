@@ -1,9 +1,11 @@
 /* Service worker do app Treino.
    Ao publicar uma versão nova do app, mude VERSION — isso invalida o cache antigo. */
-const VERSION = "treino-v1.3.0";
+const VERSION = "treino-v1.4.0";
 const ASSETS = [
   "./",
   "./index.html",
+  "./figuras.js",
+  "./figuras-def.js",
   "./manifest.webmanifest",
   "./icon-180.png",
   "./icon-192.png",

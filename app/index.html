@@ -131,6 +131,31 @@ button:disabled{opacity:.35}
 .prev{font-size:11px;color:var(--warn);margin-top:6px}
 .hidden{display:none!important}
 .progresspill{background:var(--card2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--dim);display:inline-block;margin-bottom:12px;font-variant-numeric:tabular-nums}
+/* ---- Figuras ilustrativas dos exercícios ---- */
+.figbox{margin:0 0 16px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:4px 4px 0;overflow:hidden}
+.figbox figcaption{font-size:12.5px;color:var(--dim);line-height:1.45;padding:2px 10px 11px}
+svg.figura{display:block;width:100%;height:auto}
+svg.figura{--figk:1}
+svg.figura .chao{stroke:var(--line);stroke-width:calc(2*var(--figk));stroke-linecap:round}
+svg.figura .fix{stroke:#5b6474;stroke-width:calc(2*var(--figk));fill:none;stroke-linecap:round}
+svg.figura .fix.gr{stroke-width:calc(3.4*var(--figk))}
+svg.figura .fix.esp{stroke-width:calc(2.6*var(--figk))}
+svg.figura .mb{stroke:var(--txt);stroke-width:calc(4.6*var(--figk));fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg.figura .mb-tras{stroke:var(--txt);stroke-width:calc(3.4*var(--figk));fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.42}
+svg.figura .cab{fill:var(--txt);stroke:none}
+svg.figura .carga{stroke:var(--accent);stroke-width:calc(3.4*var(--figk));fill:none;stroke-linecap:round}
+svg.figura .elast{stroke:var(--accent);stroke-width:calc(2.4*var(--figk));fill:none;stroke-linecap:round}
+svg.figura .corda{stroke:var(--accent);stroke-width:calc(2.4*var(--figk));fill:none;stroke-linecap:round}
+svg.figura .seta{stroke:var(--accent2);stroke-width:calc(2.6*var(--figk));fill:none;stroke-linecap:round}
+svg.figura .setaP{fill:var(--accent2)}
+svg.figura .fq-a{animation:figFlipA 2.6s infinite}
+svg.figura .fq-b{animation:figFlipB 2.6s infinite}
+@keyframes figFlipA{0%,44%{opacity:1}50%,94%{opacity:.17}100%{opacity:1}}
+@keyframes figFlipB{0%,44%{opacity:.17}50%,94%{opacity:1}100%{opacity:.17}}
+@media (prefers-reduced-motion:reduce){
+  svg.figura .fq-a{animation:none;opacity:1}
+  svg.figura .fq-b{animation:none;opacity:.32}
+}
 </style>
 </head>
 <body>
@@ -195,6 +220,8 @@ button:disabled{opacity:.35}
   <div class="sheet" id="sheet"></div>
 </div>
 
+<script src="figuras.js"></script>
+<script src="figuras-def.js"></script>
 <script>
 "use strict";
 
@@ -313,7 +340,7 @@ async function iniciarComPerfil(id){
 }
 
 const DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-const APP_VERSION="1.3.0";
+const APP_VERSION="1.4.0";
 const RIR_OPTS=[{v:"0",t:"Falha"},{v:"1",t:"1"},{v:"2",t:"2"},{v:"3",t:"3"},{v:"4",t:"4+"}];
 
 /* =========================================================
@@ -570,8 +597,12 @@ function updProgress(){
 /* ---- Instruções ---- */
 function showInstr(i){
   const e=etapas(S.day)[i], d=INSTR[e.n]||{p:["Instruções ainda não cadastradas para este item."],c:""};
+  // A figura é opcional: se figuras.js não tiver carregado, o modal continua
+  // funcionando exatamente como antes, só que sem o desenho.
+  const fig=(window.FIGURAS&&FIGURAS.html)?FIGURAS.html(e.n):"";
   document.getElementById("sheet").innerHTML='<div class="grab"></div>'
     +'<h3>'+esc(e.n)+'</h3><p class="shsub">'+esc(e.s)+'</p>'
+    +fig
     +'<ol>'+d.p.map(x=>'<li>'+x+'</li>').join("")+'</ol>'
     +(d.c?'<div class="cuidado"><b>Atenção:</b> '+d.c+'</div>':'')
     +'<button class="btn-ghost" style="width:100%" onclick="closeModal()">Fechar</button>';

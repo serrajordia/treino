@@ -95,6 +95,12 @@ button:disabled{opacity:.35}
 .rirbtns{display:flex;gap:6px}
 .rirbtn{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--dim);padding:9px 0;font-size:13px;font-weight:700;font-family:inherit;text-align:center}
 .rirbtn.sel{background:var(--accent2);border-color:var(--accent2);color:#062a30}
+.rpebtns{display:flex;flex-wrap:wrap;gap:6px}
+.rpebtn{flex:0 0 15.6%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--dim);padding:9px 0;font-size:13px;font-weight:700;font-family:inherit;text-align:center}
+.rpebtn.sel{background:var(--accent2);border-color:var(--accent2);color:#062a30}
+.rpedesc{font-size:12px;color:var(--dim);margin-top:8px;min-height:16px}
+.field textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px;font-size:15px;font-family:inherit;min-height:78px;resize:vertical}
+.field textarea:focus{outline:none;border-color:var(--accent2)}
 
 /* ---- Warmup / mobility blocks ---- */
 .block{background:var(--card2);border-radius:12px;padding:13px;margin-bottom:12px}
@@ -115,6 +121,20 @@ button:disabled{opacity:.35}
 .sheet .cuidado{background:#2a1417;border-radius:10px;padding:12px;font-size:13px;color:#e8bfc2;margin-bottom:14px;line-height:1.5}
 .sheet .cuidado b{color:var(--danger)}
 .grab{width:36px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 16px}
+
+/* ---- Chat com IA ---- */
+.chatMsgs{display:flex;flex-direction:column;gap:10px;margin:12px 0;max-height:46vh;overflow-y:auto}
+.msg{max-width:85%;padding:10px 12px;border-radius:14px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:var(--accent2);color:#062a30}
+.msg.ia{align-self:flex-start;background:var(--card2);color:var(--txt)}
+.msg.erro{align-self:stretch;background:#2a1417;color:#e8bfc2;border-left:3px solid var(--danger);font-size:13px}
+.chatInputRow{display:flex;gap:8px;margin-top:4px;align-items:flex-end}
+.chatInputRow textarea{flex:1;min-height:44px;max-height:120px}
+.proposta{margin-top:8px}
+.proposta ul{margin:0 0 8px;padding-left:18px;font-size:12.5px;color:var(--dim);line-height:1.5}
+.proposta li.novo{color:var(--accent)}
+.proposta li.saiu{color:var(--danger);text-decoration:line-through}
+.thinking{color:var(--dim);font-style:italic}
 
 /* ---- History ---- */
 .hist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:9px}
@@ -177,11 +197,12 @@ svg.figura .fq-b{animation:figFlipB 2.6s infinite}
     <button class="btn-ghost" onclick="document.getElementById('importFile').click()">Importar CSV</button>
   </div>
   <input type="file" id="importFile" accept=".csv,text/csv" class="hidden" onchange="importCSV(this)">
-  <p class="sub" style="margin-top:16px;font-size:11px">Os dados ficam salvos só neste aparelho — nada é enviado para a internet. Exporte o CSV de vez em quando para não perder o histórico.</p>
+  <p class="sub" style="margin-top:16px;font-size:11px">Os dados ficam salvos só neste aparelho por padrão — nada é enviado para a internet, a não ser que você use o recurso opcional de IA (em "Configurar IA"), que aí manda o treino e seu feedback direto para a Anthropic, com sua própria chave. Exporte o CSV de vez em quando para não perder o histórico.</p>
   <div class="foot">
     Perfil: <span id="perfilLabel"></span> · app v<span id="verLabel"></span><br>
     <button onclick="checkUpdate()">Buscar atualização</button>
     <button onclick="trocarPerfil()">Trocar perfil</button>
+    <button onclick="abrirConfigIA()">Configurar IA</button>
   </div>
 </section>
 
@@ -242,13 +263,35 @@ let INSTR={}, R={};
 
 /* Chaves de armazenamento — viram let (não const) porque o sufixo
    depende do perfil escolhido, resolvido em tempo de execução. */
-let K_HIST, K_ACT, K_EXP, K_DISM;
+let K_HIST, K_ACT, K_EXP, K_DISM, K_OVR;
 function aplicarChavesDoPerfil(id){
   const suf = (id===PERFIL_PADRAO) ? "" : "__"+id;
   K_HIST="treino_hist_v3"+suf;
   K_ACT="treino_active_v3"+suf;
   K_EXP="treino_lastexport_v3"+suf;
   K_DISM="treino_dismiss_v3"+suf;
+  K_OVR="treino_overrides_v1"+suf;
+}
+
+/* =========================================================
+   OVERRIDES DE IA (mudanças aceitas pelo usuário, aplicadas por
+   cima do JSON estático do perfil — o JSON em si nunca é escrito)
+   ========================================================= */
+function carregarOverrides(){
+  return load(K_OVR, {schemaV:1, treinos:{}, instrExtra:{}, log:[]});
+}
+function salvarOverrides(ovr){ save(K_OVR, ovr); }
+
+/* Mescla os overrides salvos por cima dos dados crus vindos do fetch,
+   ANTES de compilarRotinaDaSemana. Funciona para os dois modos: em
+   cicloAB a "chave" é a letra do treino (A-D); em weekday é o índice
+   do dia (0-6) direto em R. */
+function aplicarOverrides(perfilData, ovr){
+  const out = JSON.parse(JSON.stringify(perfilData)); // clone raso — JSON pequeno, sem custo relevante
+  const alvo = (out.modo==="cicloAB") ? out.treinos : out.R;
+  Object.keys(ovr.treinos||{}).forEach(k=>{ if(alvo[k]) alvo[k]=ovr.treinos[k]; });
+  out.INSTR = Object.assign({}, out.INSTR, ovr.instrExtra||{});
+  return out;
 }
 
 /* Constrói um objeto R (weekday 0-6 → dia) para a semana atual.
@@ -286,14 +329,15 @@ function compilarRotinaDaSemana(perfilData, ref){
 async function carregarPerfil(id){
   const perfil=PERFIS.find(p=>p.id===id);
   if(!perfil) throw new Error("perfil desconhecido: "+id);
+  aplicarChavesDoPerfil(id); // precisa rodar antes do fetch: define K_OVR, usado logo abaixo
   const res=await fetch(perfil.arquivo,{cache:"no-cache"});
   if(!res.ok) throw new Error("não consegui buscar "+perfil.arquivo);
-  const data=await res.json();
+  const raw=await res.json();
+  const data=aplicarOverrides(raw, carregarOverrides());
   PERFIL_ATIVO=id;
-  aplicarChavesDoPerfil(id);
   INSTR=data.INSTR||{};
   R=compilarRotinaDaSemana(data);
-  window._perfilDataAtual=data; // guardado para recompilar R a cada renderHome (perfis cicloAB)
+  window._perfilDataAtual=data; // já mesclado com overrides — recompilar R a cada renderHome (perfis cicloAB) continua funcionando
 }
 
 function trocarPerfil(){
@@ -340,8 +384,9 @@ async function iniciarComPerfil(id){
 }
 
 const DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-const APP_VERSION="1.4.0";
+const APP_VERSION="1.5.0";
 const RIR_OPTS=[{v:"0",t:"Falha"},{v:"1",t:"1"},{v:"2",t:"2"},{v:"3",t:"3"},{v:"4",t:"4+"}];
+const RPE_DESC=["Nada","Muito leve","Muito leve","Leve","Leve","Moderado","Moderado","Pesado","Pesado","Muito pesado","Máximo"];
 
 /* =========================================================
    ESTADO
@@ -351,6 +396,13 @@ let S=null, tick=null;
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){alert("Não consegui salvar. O armazenamento do navegador pode estar cheio ou bloqueado.")}}
 function hist(){return load(K_HIST,[])}
+
+/* Config de IA — chave fixa, sem sufixo de perfil: compartilhada entre
+   os perfis do mesmo aparelho (é uma credencial do dono do aparelho, não do perfil). */
+const K_AI_CFG="treino_ai_config_v1";
+function carregarConfigIA(){ return load(K_AI_CFG, {apiKey:"", modelo:"claude-sonnet-5"}); }
+function salvarConfigIA(cfg){ save(K_AI_CFG, cfg); }
+function removerConfigIA(){ localStorage.removeItem(K_AI_CFG); }
 function pad(n){return String(n).padStart(2,"0")}
 function fmt(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h>0?h+":"+pad(m)+":"+pad(s):pad(m)+":"+pad(s)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -608,7 +660,381 @@ function showInstr(i){
     +'<button class="btn-ghost" style="width:100%" onclick="closeModal()">Fechar</button>';
   document.getElementById("modal").classList.add("open");
 }
-function closeModal(){document.getElementById("modal").classList.remove("open")}
+let onModalClose=null;
+function closeModal(){
+  document.getElementById("modal").classList.remove("open");
+  if(onModalClose){ const f=onModalClose; onModalClose=null; f(); }
+}
+
+/* ---- Feedback pós-sessão (RPE + texto livre) ---- */
+function abrirFeedbackPosSessao(sp){
+  onModalClose=()=>salvarSessaoFinal(sp); // rede de segurança: fechar sem escolher nada ainda salva a sessão
+  document.getElementById("sheet").innerHTML='<div class="grab"></div>'
+    +'<h3>Como foi o treino?</h3><p class="shsub">'+esc(sp.nome)+' — '+esc(sp.foco)+'</p>'
+    +'<div class="field" style="margin-bottom:16px">'
+    +'<label>Esforço da sessão inteira (RPE)</label>'
+    +'<div class="rpebtns" id="rpebtns">'+Array.from({length:11},(_,v)=>
+        '<button type="button" class="rpebtn" onclick="setRPE('+v+',this)">'+v+'</button>').join("")
+    +'</div><div class="rpedesc" id="rpedesc">0 = nada · 10 = esforço máximo</div>'
+    +'</div>'
+    +'<div class="field" style="margin-bottom:18px">'
+    +'<label>Quer contar algo pra próxima vez? (opcional)</label>'
+    +'<textarea placeholder="Ex.: não consegui fazer o exercício X no meu equipamento, causou desconforto no ombro, queria focar mais em Y..." oninput="sp_atual.feedbackTexto=this.value"></textarea>'
+    +'</div>'
+    +'<div class="row">'
+    +'<button class="btn-ghost" onclick="salvarSessaoFinal(sp_atual);closeModal()">Só salvar</button>'
+    +'<button class="btn-primary" onclick="salvarEConversar()">Salvar e conversar com a IA</button>'
+    +'</div>';
+  window.sp_atual=sp;
+  document.getElementById("modal").classList.add("open");
+}
+function setRPE(v,btn){
+  sp_atual.rpe=v;
+  document.getElementById("rpedesc").textContent=v+" — "+RPE_DESC[v];
+  const group=btn.parentElement;
+  group.querySelectorAll(".rpebtn").forEach(b=>b.classList.remove("sel"));
+  btn.classList.add("sel");
+}
+function salvarEConversar(){
+  const sp=sp_atual;
+  salvarSessaoFinal(sp);
+  onModalClose=null;
+  if(!carregarConfigIA().apiKey){
+    abrirConfigIA({depois:()=>abrirChatIA(sp)});
+  } else {
+    abrirChatIA(sp);
+  }
+}
+
+/* =========================================================
+   CHAT COM IA
+   Conversa efêmera (nunca persistida) para revisar o treino com base
+   no feedback da sessão. Chama a API da Anthropic direto do navegador,
+   com a chave que o próprio usuário configurou (ver K_AI_CFG acima).
+   ========================================================= */
+let chatState=null;
+
+const AI_TOOL={
+  name:"propor_ajuste_treino",
+  description:"Registra a decisão final sobre o treino, quando já houver informação suficiente pra decidir. Se ainda precisar perguntar algo ao usuário antes de decidir, responda em texto normal em vez de usar esta ferramenta.",
+  input_schema:{
+    type:"object",
+    required:["decisao","mensagem"],
+    properties:{
+      decisao:{type:"string",enum:["manter","ajustar","revisao"],
+        description:"manter = nenhuma mudança; ajustar = muda só o treino do dia sobre o qual veio o feedback; revisao = o corpo já adaptou ao programa e vale reescrever o conteúdo de vários/todos os treinos do perfil."},
+      mensagem:{type:"string",description:"Resposta em texto natural, em português, para mostrar ao usuário no chat."},
+      treinosAtualizados:{type:"object",description:"Mapa chave->treino completo. Presente quando decisao é 'ajustar' (normalmente 1 chave) ou 'revisao' (pode ter várias). Cada treino tem EXATAMENTE os campos nome, foco, por, dica, aq, ex, mob (arrays de itens {n,s,o,w})."},
+      instrNovas:{type:"object",description:"Mapa nomeDoExercicio->{p:[passos de execução],c:'observação de cuidado, pode ser string vazia'}. Obrigatório para todo exercício citado em treinosAtualizados que ainda não tem instrução conhecida."}
+    }
+  }
+};
+
+function systemPromptIA(){
+  return "Você é um personal trainer revisando um treino de musculação junto com o aluno, logo depois de uma sessão. "
+    +"Responda sempre em português do Brasil, em tom direto e acolhedor — igual ao resto do app (\"você\", frases curtas, sem jargão desnecessário).\n\n"
+    +"Você recebe: o treino do dia como está hoje (nome/foco/por quê/dica + arrays aq/ex/mob de itens {n:nome, s:séries e reps, o:observação, w:1 se registra peso}), "
+    +"o log da sessão que acabou de rodar (o que foi feito, reps/peso/RIR por item), o RPE (0-10, esforço da sessão inteira) e um texto livre do aluno.\n\n"
+    +"Se o feedback for vago ou ambíguo, responda em TEXTO NORMAL fazendo uma pergunta de esclarecimento — não use a ferramenta ainda. "
+    +"Só use a ferramenta propor_ajuste_treino quando já tiver uma decisão final entre manter / ajustar / revisao.\n\n"
+    +"Regras de escopo, sempre:\n"
+    +"- 'ajustar' mexe só no treino do dia sobre o qual veio o feedback (troca de exercício, ajuste de séries/reps/instrução).\n"
+    +"- 'revisao' é só quando o corpo claramente já adaptou ao programa atual e ele parou de fazer efeito (ex.: o aluno diz que travou há semanas) — nesse caso pode reescrever o conteúdo de vários ou todos os treinos do perfil.\n"
+    +"- Em NENHUM caso mude quantos dias de treino por semana existem ou quais dias da semana são treino — isso fica fora do seu alcance, é decisão manual do aluno com outra pessoa.\n"
+    +"- Todo item que aparece em aq/ex/mob de um treino atualizado precisa ter uma instrução conhecida (você recebe a lista de nomes já conhecidos) ou vir em instrNovas com passos de execução.\n"
+    +"- Preserve campos como \"reab\":1, \"novo\":1 ou \"alerta\" quando já existirem no treino, se ainda fizer sentido.\n"
+    +"- O foco é musculação/hipertrofia — mantenha os treinos dentro de 30-40 minutos.";
+}
+
+function montarContextoInicial(sp,chave,treinoAtual){
+  return JSON.stringify({
+    perfil:PERFIL_ATIVO,
+    modo:window._perfilDataAtual.modo||"weekday",
+    chaveDoTreino:chave,
+    exerciciosConhecidos:Object.keys(INSTR),
+    treinoAtual:treinoAtual,
+    sessao:{
+      nome:sp.nome,foco:sp.foco,
+      duracaoMin:Math.round(sp.dur/60000),pausas:sp.pausas,
+      rpe:sp.rpe,
+      log:sp.log
+    },
+    feedbackTexto:sp.feedbackTexto||""
+  });
+}
+
+/* Descobre a "chave" do treino do dia da sessão: a letra (cicloAB) ou
+   o próprio índice do dia (weekday) — mesma lógica de compilarRotinaDaSemana. */
+function chaveDoTreino(day){
+  const data=window._perfilDataAtual;
+  if(data.modo==="cicloAB"){
+    const cfg=data.dias[String(day)];
+    if(!cfg) return String(day);
+    const hoje=new Date();
+    const inicio=new Date(data.inicioCiclo+"T00:00:00");
+    const dataDesseDia=new Date(hoje); dataDesseDia.setDate(hoje.getDate()+(day-hoje.getDay()));
+    const diffDias=Math.floor((dataDesseDia-inicio)/86400000);
+    const semanaIndex=Math.floor(diffDias/7);
+    const par=(((semanaIndex%2)+2)%2)===0;
+    return par?cfg.semana1:cfg.semana2;
+  }
+  return String(day);
+}
+function treinoAtualPorChave(chave){
+  const data=window._perfilDataAtual;
+  return data.modo==="cicloAB" ? data.treinos[chave] : data.R[chave];
+}
+
+function abrirChatIA(sp){
+  const chave=chaveDoTreino(sp.day);
+  chatState={sp:sp,chave:chave,treinoAtual:R[sp.day],mensagensAPI:[],mensagensUI:[],propostas:{},enviando:false,_corrigindo:false};
+  onModalClose=null;
+  renderChatSheet();
+  if(sp.feedbackTexto && sp.feedbackTexto.trim()){
+    enviarMensagemIA(sp.feedbackTexto);
+  } else {
+    chatState.mensagensUI.push({quem:"ia",texto:"Como foi o treino? Me conta se algo incomodou ou o que você quer ajustar."});
+    renderChatSheet();
+  }
+}
+
+function renderChatSheet(){
+  const msgsHTML=chatState.mensagensUI.map(m=>{
+    if(m.quem==="erro") return '<div class="msg erro">'+esc(m.texto)+(m.retry?'<div style="margin-top:8px"><button class="btn-ghost" onclick="retryUltima()">Tentar de novo</button></div>':'')+'</div>';
+    const bolha='<div class="msg '+(m.quem==="user"?"user":"ia")+'">'+esc(m.texto)+'</div>';
+    return bolha+(m.proposta?renderPropostaHTML(m.proposta,m._pid):'');
+  }).join("");
+  document.getElementById("sheet").innerHTML='<div class="grab"></div>'
+    +'<h3>Conversa com a IA</h3><p class="shsub">'+esc(chatState.sp.nome)+' — '+esc(chatState.sp.foco)+'</p>'
+    +'<div class="chatMsgs" id="chatMsgs">'+msgsHTML+(chatState.enviando?'<div class="msg ia thinking">Pensando...</div>':'')+'</div>'
+    +'<div class="chatInputRow">'
+    +'<textarea id="chatInput" placeholder="Escreva aqui..." '+(chatState.enviando?"disabled":"")+'></textarea>'
+    +'<button class="btn-primary" id="chatSend" onclick="enviarDoInput()" '+(chatState.enviando?"disabled":"")+'>Enviar</button>'
+    +'</div>'
+    +'<button class="btn-ghost" style="width:100%;margin-top:10px" onclick="closeModal()">Fechar</button>';
+  document.getElementById("modal").classList.add("open");
+  const box=document.getElementById("chatMsgs"); if(box) box.scrollTop=box.scrollHeight;
+}
+
+function renderPropostaHTML(proposta,pid){
+  if(proposta.decisao==="manter"||!proposta.treinosAtualizados) return "";
+  const cards=Object.keys(proposta.treinosAtualizados).map(chave=>
+    renderDiffTreino(chave,treinoAtualPorChave(chave),proposta.treinosAtualizados[chave])
+  ).join("");
+  return cards+'<div class="row" style="margin-top:8px">'
+    +'<button class="btn-primary" onclick="aplicarPropostaIA(\''+pid+'\')">Aplicar</button>'
+    +'<button class="btn-ghost" onclick="descartarProposta(\''+pid+'\')">Descartar</button>'
+    +'</div>';
+}
+function renderDiffTreino(chave,antigo,novo){
+  const nomesAntigos=new Set(), nomesNovos=new Set();
+  ["aq","ex","mob"].forEach(k=>(antigo&&antigo[k]||[]).forEach(it=>nomesAntigos.add(it.n)));
+  ["aq","ex","mob"].forEach(k=>(novo[k]||[]).forEach(it=>nomesNovos.add(it.n)));
+  const li=(it,cls)=>'<li'+(cls?' class="'+cls+'"':'')+'>'+esc(it.n)+' — '+esc(it.s)+'</li>';
+  const antesLi=[]; ["aq","ex","mob"].forEach(k=>(antigo&&antigo[k]||[]).forEach(it=>antesLi.push(li(it,nomesNovos.has(it.n)?"":"saiu"))));
+  const depoisLi=[]; ["aq","ex","mob"].forEach(k=>(novo[k]||[]).forEach(it=>depoisLi.push(li(it,nomesAntigos.has(it.n)?"":"novo"))));
+  return '<div class="block proposta"><div class="bt">'+esc(novo.nome||chave)+' — '+esc(novo.foco||"")+'</div>'
+    +'<details><summary>Ver o que muda</summary>'
+    +'<div class="bt" style="margin-top:8px">Antes</div><ul>'+(antesLi.join("")||"<li>—</li>")+'</ul>'
+    +'<div class="bt" style="margin-top:8px">Depois</div><ul>'+depoisLi.join("")+'</ul>'
+    +'</details></div>';
+}
+
+function enviarDoInput(){
+  const el=document.getElementById("chatInput");
+  const texto=(el.value||"").trim();
+  if(!texto||chatState.enviando) return;
+  el.value="";
+  enviarMensagemIA(texto);
+}
+
+/* Constrói o próximo turno "user". Se o turno anterior do assistente usou
+   a ferramenta, a API exige um tool_result antes de qualquer texto novo. */
+function montarProximoTurnoUser(mensagensAPI,textoNovo){
+  const ultimo=mensagensAPI[mensagensAPI.length-1];
+  const content=[];
+  if(ultimo&&ultimo.role==="assistant"){
+    const toolUse=(ultimo.content||[]).find(c=>c.type==="tool_use");
+    if(toolUse) content.push({type:"tool_result",tool_use_id:toolUse.id,content:"ok"});
+  }
+  content.push({type:"text",text:textoNovo});
+  return {role:"user",content:content};
+}
+
+async function enviarMensagemIA(texto,mostrarBolha){
+  if(mostrarBolha!==false) chatState.mensagensUI.push({quem:"user",texto:texto});
+  chatState.enviando=true; renderChatSheet();
+  const isPrimeira=chatState.mensagensAPI.length===0;
+  const textoParaAPI=isPrimeira
+    ? "Contexto da sessão (JSON): "+montarContextoInicial(chatState.sp,chatState.chave,chatState.treinoAtual)+"\n\nMensagem do aluno: "+texto
+    : texto;
+  const userTurn=montarProximoTurnoUser(chatState.mensagensAPI,textoParaAPI);
+  chatState.mensagensAPI.push(userTurn);
+  chatState._ultimaTentativa={texto:texto};
+  try{
+    const resp=await chamarAPIAnthropic(chatState.mensagensAPI);
+    chatState.enviando=false;
+    processarRespostaIA(resp);
+  }catch(e){
+    chatState.enviando=false;
+    chatState.mensagensAPI.pop();
+    chatState.mensagensUI.push({quem:"erro",texto:mensagemDeErro(e),retry:true});
+    renderChatSheet();
+  }
+}
+function retryUltima(){
+  const idx=chatState.mensagensUI.map(m=>m.quem).lastIndexOf("erro");
+  if(idx>=0) chatState.mensagensUI.splice(idx,1);
+  const t=chatState._ultimaTentativa;
+  if(t) enviarMensagemIA(t.texto,false);
+}
+
+async function chamarAPIAnthropic(mensagens){
+  const cfg=carregarConfigIA();
+  if(!cfg.apiKey) throw {tipo:"sem_chave"};
+  let res;
+  try{
+    res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{
+        "content-type":"application/json",
+        "x-api-key":cfg.apiKey,
+        "anthropic-version":"2023-06-01",
+        "anthropic-dangerous-direct-browser-access":"true"
+      },
+      body:JSON.stringify({
+        model:cfg.modelo||"claude-sonnet-5",
+        max_tokens:4096,
+        system:systemPromptIA(),
+        tools:[AI_TOOL],
+        tool_choice:{type:"auto"},
+        messages:mensagens
+      })
+    });
+  }catch(e){ throw {tipo:"rede"} }
+  if(!res.ok){
+    let corpo=null; try{corpo=await res.json()}catch(e){}
+    throw {tipo:"http",status:res.status,corpo:corpo};
+  }
+  return res.json();
+}
+
+function mensagemDeErro(e){
+  if(e&&e.tipo==="sem_chave") return 'Nenhuma chave de IA configurada. Toque em "Configurar IA" no rodapé da tela inicial.';
+  if(e&&e.tipo==="http"){
+    if(e.status===401||e.status===403) return 'Chave inválida ou sem permissão. Confira em "Configurar IA".';
+    if(e.status===429||e.status===529) return "A IA está sobrecarregada ou o limite foi atingido. Tente de novo em instantes.";
+    return "A IA respondeu com um erro (código "+e.status+"). Tente de novo.";
+  }
+  return "Sem conexão com a internet. O treino já foi salvo — você pode conversar com a IA depois, quando estiver online.";
+}
+
+function processarRespostaIA(resp){
+  const content=resp.content||[];
+  chatState.mensagensAPI.push({role:"assistant",content:content});
+  const textoBlocks=content.filter(c=>c.type==="text").map(c=>c.text).join("\n").trim();
+  const toolBlock=content.find(c=>c.type==="tool_use");
+
+  if(!toolBlock){
+    chatState._corrigindo=false;
+    chatState.mensagensUI.push({quem:"ia",texto:textoBlocks||"..."});
+    renderChatSheet();
+    return;
+  }
+
+  const proposta=toolBlock.input||{};
+
+  if(proposta.decisao==="manter"){
+    chatState._corrigindo=false;
+    chatState.mensagensUI.push({quem:"ia",texto:proposta.mensagem||textoBlocks||"Vamos manter o treino como está."});
+    renderChatSheet();
+    return;
+  }
+
+  const val=validarProposta(proposta);
+  if(!val.ok){
+    if(!chatState._corrigindo){
+      chatState._corrigindo=true;
+      enviarMensagemIA("A resposta ficou incompleta: faltou a instrução (INSTR) de: "+(val.faltando||[]).join(", ")+". Responda de novo usando a ferramenta, incluindo instrNovas para esses itens.",false);
+      return;
+    }
+    chatState._corrigindo=false;
+    chatState.mensagensUI.push({quem:"erro",texto:"A IA não conseguiu completar a proposta (faltaram instruções de exercício). Tente reformular seu pedido."});
+    renderChatSheet();
+    return;
+  }
+
+  chatState._corrigindo=false;
+  const pid="p"+Date.now();
+  chatState.propostas[pid]=proposta;
+  chatState.mensagensUI.push({quem:"ia",texto:proposta.mensagem||textoBlocks,proposta:proposta,_pid:pid});
+  renderChatSheet();
+}
+
+function validarProposta(proposta){
+  if(!proposta.treinosAtualizados||!Object.keys(proposta.treinosAtualizados).length) return {ok:false,faltando:["(nenhum treino atualizado veio na resposta)"]};
+  const conhecidas=Object.assign({},INSTR,proposta.instrNovas||{});
+  const faltando=[];
+  Object.values(proposta.treinosAtualizados).forEach(t=>{
+    ["aq","ex","mob"].forEach(k=>(t[k]||[]).forEach(item=>{
+      if(!conhecidas[item.n]) faltando.push(item.n);
+    }));
+  });
+  return faltando.length?{ok:false,faltando:faltando}:{ok:true};
+}
+
+function aplicarPropostaIA(pid){
+  const proposta=chatState.propostas[pid];
+  if(!proposta) return;
+  const ovr=carregarOverrides();
+  Object.assign(ovr.treinos,proposta.treinosAtualizados);
+  Object.assign(ovr.instrExtra,proposta.instrNovas||{});
+  ovr.log.push({ts:Date.now(),chaves:Object.keys(proposta.treinosAtualizados),decisao:proposta.decisao,resumo:(proposta.mensagem||"").slice(0,140)});
+  salvarOverrides(ovr);
+  marcarDecisaoIA(chatState.sp.start,proposta.decisao,true);
+  delete chatState.propostas[pid];
+  carregarPerfil(PERFIL_ATIVO).then(()=>{
+    renderHome();
+    closeModal();
+    alert("Treino atualizado! A mudança já vale a partir de agora.");
+  });
+}
+function descartarProposta(pid){
+  const proposta=chatState.propostas[pid];
+  if(proposta) marcarDecisaoIA(chatState.sp.start,proposta.decisao,false);
+  delete chatState.propostas[pid];
+  chatState.mensagensUI.push({quem:"ia",texto:"Sem problema, mantive o treino como estava. Pode me contar mais alguma coisa se quiser tentar de outro jeito."});
+  renderChatSheet();
+}
+function marcarDecisaoIA(start,decisao,aplicado){
+  const h=hist(); const s=h.find(x=>x.start===start);
+  if(s){ s.iaDecisao=decisao; s.iaAplicado=aplicado; save(K_HIST,h); }
+}
+
+/* ---- Configurar IA (chave) ---- */
+function abrirConfigIA(opts){
+  onModalClose=null;
+  const cfg=carregarConfigIA();
+  document.getElementById("sheet").innerHTML='<div class="grab"></div>'
+    +'<h3>Configurar IA</h3>'
+    +'<p class="shsub" style="color:var(--dim)">Recurso opcional. Ao usar, o treino do dia, seu RPE e o texto que você escrever são enviados direto do seu navegador para a API da Anthropic, com sua própria chave — nada passa por um servidor nosso. A chave fica salva só neste aparelho.</p>'
+    +'<div class="field" style="margin-bottom:14px"><label>Chave da API (console.anthropic.com)</label>'
+    +'<input type="password" id="aiKeyInput" placeholder="sk-ant-..." value="'+esc(cfg.apiKey)+'" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px;font-size:15px;font-family:inherit"></div>'
+    +'<div class="row">'
+    +'<button class="btn-danger" onclick="removerConfigIA();closeModal()">Remover chave</button>'
+    +'<button class="btn-primary" onclick="salvarConfigIAeFechar()">Salvar</button>'
+    +'</div>';
+  window._aiConfigDepois=(opts&&opts.depois)||null;
+  document.getElementById("modal").classList.add("open");
+}
+function salvarConfigIAeFechar(){
+  const key=(document.getElementById("aiKeyInput").value||"").trim();
+  const cfg=carregarConfigIA();
+  cfg.apiKey=key;
+  salvarConfigIA(cfg);
+  closeModal();
+  if(key&&window._aiConfigDepois){ const f=window._aiConfigDepois; window._aiConfigDepois=null; f(); }
+}
 
 /* ---- Timer ---- */
 function startTick(){stopTick();paint();tick=setInterval(paint,500)}
@@ -632,17 +1058,29 @@ function finishSession(){
   if(!S)return;
   const d=S.log.filter(l=>l.done).length;
   if(!confirm("Finalizar o treino?\n\nTempo: "+fmt(elapsed())+"\nExercícios concluídos: "+d+" de "+S.log.length))return;
-  const h=hist();
-  h.push({start:S.start,end:Date.now(),dur:elapsed(),day:S.day,nome:S.nome,foco:S.foco,pausas:S.pausas||0,log:S.log});
-  save(K_HIST,h);
-  localStorage.removeItem(K_ACT);
-  const dur=fmt(elapsed()); S=null; stopTick(); letSleep();
+  const sp={start:S.start,end:Date.now(),dur:elapsed(),day:S.day,nome:S.nome,foco:S.foco,pausas:S.pausas||0,log:S.log,
+             rpe:null,cargaTreino:null,feedbackTexto:"",iaDecisao:null,iaAplicado:false,_salva:false};
+  stopTick(); letSleep();
   document.getElementById("btnPause").textContent="Pausar";
   document.getElementById("view-session").classList.add("hidden");
   document.getElementById("view-home").classList.remove("hidden");
   document.getElementById("timerBar").classList.add("hidden");
-  window.scrollTo(0,0); renderHome();
-  setTimeout(()=>alert("Treino registrado. Duração: "+dur),120);
+  window.scrollTo(0,0); S=null;
+  abrirFeedbackPosSessao(sp);
+}
+
+/* Grava a sessão no histórico. Idempotente (flag _salva) — pode ser
+   chamada tanto pelos botões do formulário de feedback quanto pelo
+   hook onModalClose (se o usuário fechar o modal sem escolher nada),
+   sem risco de duplicar a sessão no histórico. */
+function salvarSessaoFinal(sp){
+  if(sp._salva) return;
+  sp._salva=true;
+  if(sp.rpe!=null) sp.cargaTreino=Math.round(sp.dur/60000)*sp.rpe;
+  const s=Object.assign({},sp); delete s._salva;
+  const h=hist(); h.push(s); save(K_HIST,h);
+  localStorage.removeItem(K_ACT);
+  renderHome();
 }
 
 /* =========================================================
@@ -653,13 +1091,14 @@ function exportCSV(){
   const h=hist();
   if(!h.length)return alert("Nenhum treino para exportar ainda.");
   const TIPO={aq:"aquecimento",ex:"exercicio",mob:"mobilidade"};
-  const rows=[["data","hora_inicio","dia","foco","duracao_seg","duracao_hms","pausas","tipo","exercicio","concluido","reps_ultima_serie","peso_kg","rir"]];
+  const rows=[["data","hora_inicio","dia","foco","duracao_seg","duracao_hms","pausas","tipo","exercicio","concluido","reps_ultima_serie","peso_kg","rir","rpe","carga_treino","feedback_texto","ia_decisao","ia_aplicado"]];
   h.forEach(s=>{
     const d=new Date(s.start);
     const dt=d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
     const hh=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
     s.log.forEach(l=>rows.push([dt,hh,s.nome,s.foco,Math.round(s.dur/1000),fmt(s.dur),s.pausas||0,
-      TIPO[l.tipo]||"exercicio",l.n,l.done?"sim":"nao",l.reps||"",l.peso||"",l.rir||""]));
+      TIPO[l.tipo]||"exercicio",l.n,l.done?"sim":"nao",l.reps||"",l.peso||"",l.rir||"",
+      s.rpe!=null?s.rpe:"",s.cargaTreino!=null?s.cargaTreino:"",s.feedbackTexto||"",s.iaDecisao||"",s.iaAplicado?"sim":"nao"]));
   });
   const csv="﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n");
   const fname="treino-historico-"+new Date().toISOString().slice(0,10)+".csv";
@@ -718,7 +1157,12 @@ function importCSV(input){
           const dayNum=DIAS.indexOf(r[ix("dia")]);
           map.set(key,{start:dt.getTime(),dur:(parseInt(r[ix("duracao_seg")],10)||0)*1000,
             day:dayNum<0?1:dayNum,nome:r[ix("dia")],foco:r[ix("foco")],
-            pausas:ix("pausas")>=0?(parseInt(r[ix("pausas")],10)||0):0,log:[]});
+            pausas:ix("pausas")>=0?(parseInt(r[ix("pausas")],10)||0):0,log:[],
+            rpe:ix("rpe")>=0&&r[ix("rpe")]!==""?Number(r[ix("rpe")]):null,
+            cargaTreino:ix("carga_treino")>=0&&r[ix("carga_treino")]!==""?Number(r[ix("carga_treino")]):null,
+            feedbackTexto:ix("feedback_texto")>=0?r[ix("feedback_texto")]:"",
+            iaDecisao:ix("ia_decisao")>=0?(r[ix("ia_decisao")]||null):null,
+            iaAplicado:ix("ia_aplicado")>=0?r[ix("ia_aplicado")]==="sim":false});
         }
         const TREV={aquecimento:"aq",exercicio:"ex",mobilidade:"mob"};
         map.get(key).log.push({n:r[ix("exercicio")],done:r[ix("concluido")]==="sim",

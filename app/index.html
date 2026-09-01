@@ -150,6 +150,31 @@ button:disabled{opacity:.35}
 .empty{text-align:center;color:var(--dim);padding:34px 16px;font-size:14px}
 .prev{font-size:11px;color:var(--warn);margin-top:6px}
 .hidden{display:none!important}
+
+/* ---- Painel (dashboard) ---- */
+.kpigrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.kpi .kv{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .kl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.kpi .kd{font-size:11px;margin-top:4px}
+.kpi .kd.up{color:var(--accent)}
+.kpi .kd.down{color:var(--danger)}
+.kpi .kd.flat{color:var(--dim)}
+.weekbars{display:flex;align-items:flex-end;gap:3px;height:56px}
+.weekbars .wb{flex:1;background:var(--accent2);opacity:.4;border-radius:3px 3px 0 0;min-height:2px}
+.weekbars .wb.hit{background:var(--accent);opacity:1}
+svg.chart{display:block;width:100%;height:auto}
+.chartlegend{display:flex;gap:14px;margin-top:6px;font-size:11px;color:var(--dim)}
+.chartlegend span{display:inline-flex;align-items:center;gap:5px}
+.chartlegend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.cmptable{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.cmptable td{padding:5px 0;border-bottom:1px solid #22262f}
+.cmptable td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.exlist .exrow{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid #22262f;font-size:13px;gap:8px}
+.exlist .exrow:last-child{border-bottom:none}
+.exlist .exd{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.exlist .exd.up{color:var(--accent)}
+.exlist .exd.down{color:var(--danger)}
 .progresspill{background:var(--card2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--dim);display:inline-block;margin-bottom:12px;font-variant-numeric:tabular-nums}
 /* ---- Figuras ilustrativas dos exercícios ---- */
 .figbox{margin:0 0 16px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:4px 4px 0;overflow:hidden}
@@ -192,6 +217,9 @@ svg.figura .fq-b{animation:figFlipB 2.6s infinite}
   <div class="days" id="dayList"></div>
   <h2>Histórico</h2>
   <div id="histList"></div>
+  <div class="row" style="margin-top:10px">
+    <button class="btn-ghost" style="width:100%" onclick="abrirDashboard()">📊 Painel</button>
+  </div>
   <div class="row" style="margin-top:14px">
     <button class="btn-ghost" onclick="exportCSV()">Exportar CSV</button>
     <button class="btn-ghost" onclick="document.getElementById('importFile').click()">Importar CSV</button>
@@ -220,6 +248,15 @@ svg.figura .fq-b{animation:figFlipB 2.6s infinite}
   <p class="sub" id="sessSub"></p>
   <div class="progresspill" id="progressPill"></div>
   <div id="sessBody"></div>
+</section>
+
+<!-- ============ PAINEL (dashboard) ============ -->
+<section id="view-dashboard" class="hidden">
+  <button class="btn-ghost" style="padding:7px 12px;font-size:13px;margin-top:14px" onclick="fecharDashboard()">‹ Voltar</button>
+  <h1>Painel</h1>
+  <p class="sub" id="dashSub"></p>
+  <div id="dashKPIs"></div>
+  <div id="dashLongitudinal"></div>
 </section>
 
 </div>
@@ -384,7 +421,7 @@ async function iniciarComPerfil(id){
 }
 
 const DIAS=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-const APP_VERSION="1.5.0";
+const APP_VERSION="1.6.0";
 const RIR_OPTS=[{v:"0",t:"Falha"},{v:"1",t:"1"},{v:"2",t:"2"},{v:"3",t:"3"},{v:"4",t:"4+"}];
 const RPE_DESC=["Nada","Muito leve","Muito leve","Leve","Leve","Moderado","Moderado","Pesado","Pesado","Muito pesado","Máximo"];
 
@@ -488,6 +525,318 @@ function renderHist(){
 }
 
 /* =========================================================
+   PAINEL (dashboard)
+   Camada de dados: funções puras sobre hist() e R, sem tocar no DOM.
+   ========================================================= */
+function diasEntre(tsA,tsB){ return Math.floor((tsB-tsA)/86400000); }
+
+/* reps/peso são texto livre ("10", "10-12", "", "falha") — nunca usar
+   Number(l.peso) direto. Range vira média do primeiro e último número achado. */
+function parseNumero(str){
+  if(str==null) return null;
+  const nums=(String(str).match(/\d+(\.\d+)?/g)||[]).map(Number);
+  if(!nums.length) return null;
+  return nums.length===1 ? nums[0] : (nums[0]+nums[nums.length-1])/2;
+}
+
+function mediaMovel(pontos,janela){
+  return pontos.map((p,i)=>{
+    const fatia=pontos.slice(Math.max(0,i-janela+1),i+1);
+    return {x:p.x, y:fatia.reduce((a,b)=>a+b.y,0)/fatia.length};
+  });
+}
+
+/* ---- Assiduidade ---- */
+function agruparPorSemana(sessoes,numSemanas){
+  numSemanas=numSemanas||12;
+  const hoje=Date.now(), buckets=new Array(numSemanas).fill(0);
+  sessoes.forEach(s=>{
+    const semanasAtras=Math.floor(diasEntre(s.start,hoje)/7);
+    if(semanasAtras>=0 && semanasAtras<numSemanas) buckets[semanasAtras]++;
+  });
+  // devolve mais antiga → mais nova (última posição = semana atual)
+  return buckets.map((count,semanasAtras)=>({semanasAtras,count})).reverse();
+}
+function metaSemanal(){ return Object.values(R).filter(d=>d.foco!=="Descanso").length; }
+
+/* Ignora a semana atual se ainda estiver vazia (pode só não ter acontecido
+   ainda), depois conta semanas não-vazias consecutivas indo pra trás — uma
+   semana vazia no meio quebra a sequência. */
+function calcularSequencia(porSemana){
+  const buckets=porSemana.slice().reverse(); // índice 0 = semana atual
+  let i=0;
+  if(buckets.length && buckets[0].count===0) i=1;
+  let seq=0;
+  for(;i<buckets.length;i++){ if(buckets[i].count>0) seq++; else break; }
+  return seq;
+}
+function calcularAssiduidade(sessoes){
+  const porSemana=agruparPorSemana(sessoes,12);
+  return {
+    totalSessoes:sessoes.length,
+    diasDesdeUltima: sessoes.length?diasEntre(sessoes[sessoes.length-1].start,Date.now()):null,
+    sessoesEstaSemana: porSemana.length?porSemana[porSemana.length-1].count:0,
+    sequenciaSemanas: calcularSequencia(porSemana),
+    porSemana, meta:metaSemanal()
+  };
+}
+
+/* ---- Completude ---- */
+function completudeSessao(s){
+  if(!s.log || !s.log.length) return null;
+  const porTipo={aq:{d:0,t:0},ex:{d:0,t:0},mob:{d:0,t:0}};
+  let done=0;
+  s.log.forEach(l=>{
+    const tp=porTipo[l.tipo]||porTipo.ex;
+    tp.t++; if(l.done){tp.d++; done++;}
+  });
+  return {pct:done/s.log.length, porTipo};
+}
+function serieCompletude(sessoes,limite){
+  const pts=[];
+  sessoes.slice(-(limite||40)).forEach(s=>{ const c=completudeSessao(s); if(c) pts.push(c.pct); });
+  return pts.map((y,x)=>({x,y}));
+}
+
+/* ---- RPE ---- */
+function serieRPE(sessoes,limite){
+  const pts=sessoes.filter(s=>s.rpe!=null).slice(-(limite||40)).map(s=>s.rpe);
+  return pts.map((y,x)=>({x,y}));
+}
+function mediaRPE(sessoes,ultimosDias){
+  const corte=Date.now()-(ultimosDias||7)*86400000;
+  const vals=sessoes.filter(s=>s.rpe!=null && s.start>=corte).map(s=>s.rpe);
+  return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+}
+
+/* ---- Carga ---- */
+function serieCarga(sessoes,limite){
+  const brutos=sessoes.filter(s=>s.cargaTreino!=null).slice(-(limite||40)).map(s=>s.cargaTreino).map((y,x)=>({x,y}));
+  return {brutos, suavizada:mediaMovel(brutos,5)};
+}
+function tendenciaCarga(sessoes){
+  const comCarga=sessoes.filter(s=>s.cargaTreino!=null);
+  if(comCarga.length<4) return {direcao:"sem_dados"};
+  const n=Math.min(3,Math.floor(comCarga.length/2));
+  const media=arr=>arr.reduce((a,s)=>a+s.cargaTreino,0)/arr.length;
+  const mediaR=media(comCarga.slice(-n)), mediaA=media(comCarga.slice(-2*n,-n));
+  if(!mediaA) return {direcao:"sem_dados"};
+  const deltaPct=(mediaR-mediaA)/mediaA*100;
+  const direcao = deltaPct>8?"subindo" : deltaPct<-8?"descendo" : "estavel";
+  return {direcao, deltaPct};
+}
+
+/* ---- Esforço vs. carga ----
+   cargaTreino = duração(min) × RPE, então não é independente do RPE — um
+   scatter simples só mostraria RPE escalado. Em vez disso: duas linhas na
+   mesma escala visual (RPE bruto 0-10, carga normalizada min-max pro
+   mesmo range), pra dar pra comparar a FORMA das curvas. */
+function serieEsforcoVsCarga(sessoes,limite){
+  const comAmbos=sessoes.filter(s=>s.rpe!=null && s.cargaTreino!=null).slice(-(limite||40));
+  if(!comAmbos.length) return null;
+  const cargas=comAmbos.map(s=>s.cargaTreino), min=Math.min(...cargas), max=Math.max(...cargas);
+  return {
+    rpe: comAmbos.map((s,x)=>({x,y:s.rpe})),
+    cargaNorm: comAmbos.map((s,x)=>({x,y: max===min?5:(s.cargaTreino-min)/(max-min)*10}))
+  };
+}
+
+/* ---- Comparação com os primeiros treinos ---- */
+function compararGeral(sessoes,n){
+  if(sessoes.length<2) return null;
+  const k=Math.min(n||5,Math.floor(sessoes.length/2));
+  const primeiras=sessoes.slice(0,k), ultimas=sessoes.slice(-k);
+  const media=(arr,fn)=>{ const v=arr.map(fn).filter(x=>x!=null); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; };
+  const pct=s=>{ const c=completudeSessao(s); return c?c.pct:null; };
+  return {
+    n:k,
+    duracao:{antes:media(primeiras,s=>s.dur), depois:media(ultimas,s=>s.dur)},
+    completude:{antes:media(primeiras,pct), depois:media(ultimas,pct)},
+    rpe:{antes:media(primeiras,s=>s.rpe), depois:media(ultimas,s=>s.rpe)}
+  };
+}
+/* Progressão por exercício: agrupa log[] pelo nome em todo o histórico
+   (só itens concluídos), prefere peso (kg) quando há dado suficiente,
+   senão cai pra reps. Exercício com menos que minPontos de cada lado
+   fica de fora — não mostra delta quebrado. */
+function compararExercicios(sessoes,opts){
+  const minPontos=(opts&&opts.minPontos)||2;
+  const porExercicio={};
+  sessoes.forEach(s=>(s.log||[]).forEach(l=>{
+    if(!l.done) return;
+    const reg=(porExercicio[l.n]=porExercicio[l.n]||{peso:[],reps:[]});
+    const p=parseNumero(l.peso), r=parseNumero(l.reps);
+    if(p!=null) reg.peso.push(p);
+    if(r!=null) reg.reps.push(r);
+  }));
+  const out=[];
+  Object.keys(porExercicio).forEach(nome=>{
+    const reg=porExercicio[nome];
+    const usaPeso=reg.peso.length>=minPontos*2;
+    const vals=usaPeso?reg.peso:reg.reps, unidade=usaPeso?"kg":"reps";
+    if(vals.length<minPontos*2) return;
+    const media=arr=>arr.reduce((a,b)=>a+b,0)/arr.length;
+    const antes=media(vals.slice(0,minPontos)), depois=media(vals.slice(-minPontos));
+    if(!antes) return;
+    out.push({nome, antes, depois, deltaPct:(depois-antes)/antes*100, unidade});
+  });
+  out.sort((a,b)=>Math.abs(b.deltaPct)-Math.abs(a.deltaPct));
+  return out.slice(0,8);
+}
+
+/* ---- KPIs executivos ---- */
+function kpisExecutivos(sessoes){
+  const comp=serieCompletude(sessoes,10);
+  return {
+    assid: calcularAssiduidade(sessoes),
+    rpeMedia: mediaRPE(sessoes,7),
+    tend: tendenciaCarga(sessoes),
+    compMedia: comp.length ? comp.reduce((a,p)=>a+p.y,0)/comp.length : null
+  };
+}
+
+/* =========================================================
+   PAINEL — UI
+   ========================================================= */
+/* Gráfico de linha genérico em SVG inline — único ponto de construção de
+   SVG do painel, reusado por completude/RPE/carga/esforço-vs-carga. Cada
+   série normaliza seu próprio y (ou usa minY/maxY fixo, se passado) pro
+   range visual da altura do gráfico. X é espaçado por índice, não por
+   tempo real — sessões têm cadência irregular, e isso mantém o gráfico
+   legível em tela de celular. */
+function svgLineChart(series){
+  const W=300, H=90, padX=6, padTop=8, padBottom=8;
+  const maxX=Math.max(1,...series.map(s=>Math.max(0,...s.data.map(p=>p.x))));
+  const polys=series.map(s=>{
+    const ys=s.data.map(p=>p.y);
+    let min=s.minY!=null?s.minY:Math.min(...ys), max=s.maxY!=null?s.maxY:Math.max(...ys);
+    if(max===min){ min-=1; max+=1; } // série constante — evita divisão por zero, desenha reta no meio
+    const pts=s.data.map(p=>{
+      const px=padX+(p.x/maxX)*(W-2*padX);
+      const py=padTop+(1-(p.y-min)/(max-min))*(H-padTop-padBottom);
+      return px.toFixed(1)+","+py.toFixed(1);
+    }).join(" ");
+    return '<polyline points="'+pts+'" fill="none" stroke="'+s.color+'" stroke-width="2"'
+      +(s.dashed?' stroke-dasharray="4 3"':'')+' stroke-linecap="round" stroke-linejoin="round"/>';
+  }).join("");
+  return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+polys+'</svg>';
+}
+
+function kpiCard(label,value,delta){
+  return '<div class="kpi"><div class="kv">'+esc(value)+'</div><div class="kl">'+esc(label)+'</div>'
+    +(delta?'<div class="kd '+delta.cls+'">'+esc(delta.txt)+'</div>':'')+'</div>';
+}
+function renderKPIGrid(k){
+  const a=k.assid;
+  const rpeTxt=k.rpeMedia!=null?k.rpeMedia.toFixed(1):"—";
+  const compTxt=k.compMedia!=null?Math.round(k.compMedia*100)+"%":"—";
+  let tendValor="—", tendDelta=null;
+  if(k.tend.direcao!=="sem_dados"){
+    tendValor = k.tend.direcao==="subindo"?"Subindo":k.tend.direcao==="descendo"?"Descendo":"Estável";
+    const cls = k.tend.direcao==="subindo"?"up":k.tend.direcao==="descendo"?"down":"flat";
+    const seta = k.tend.direcao==="subindo"?"↑":k.tend.direcao==="descendo"?"↓":"→";
+    tendDelta={cls, txt:seta+" "+Math.abs(Math.round(k.tend.deltaPct))+"%"};
+  }
+  return '<div class="kpigrid">'
+    +kpiCard("Essa semana", a.sessoesEstaSemana+"/"+a.meta)
+    +kpiCard("Sequência", a.sequenciaSemanas+" sem"+(a.sequenciaSemanas===1?"":"s"))
+    +kpiCard("Desde o último", a.diasDesdeUltima==null?"—":(a.diasDesdeUltima===0?"hoje":a.diasDesdeUltima+" dia"+(a.diasDesdeUltima===1?"":"s")))
+    +kpiCard("RPE médio (7d)", rpeTxt)
+    +kpiCard("Tendência de carga", tendValor, tendDelta)
+    +kpiCard("Completude média", compTxt)
+    +'</div>';
+}
+
+function blocoAssiduidade(a){
+  const max=Math.max(1,...a.porSemana.map(b=>b.count));
+  const bars=a.porSemana.map(b=>{
+    const alt=Math.max(2,Math.round(b.count/max*52));
+    return '<div class="wb'+(b.semanasAtras===0&&b.count>0?' hit':'')+'" style="height:'+alt+'px" title="'+b.count+' treino'+(b.count===1?"":"s")+'"></div>';
+  }).join("");
+  return '<div class="block"><div class="bt">Assiduidade</div>'
+    +'<div class="bc">'+a.totalSessoes+' treino'+(a.totalSessoes===1?"":"s")+' no total · últimas 12 semanas</div>'
+    +'<div class="weekbars" style="margin-top:8px">'+bars+'</div></div>';
+}
+
+function blocoCompletude(h){
+  const serie=serieCompletude(h,40);
+  if(serie.length<3) return '<div class="block"><div class="bt">Completude dos treinos</div><div class="empty" style="padding:16px 0">Poucos treinos registrados ainda pra mostrar uma tendência.</div></div>';
+  const pct=Math.round(serie[serie.length-1].y*100);
+  const svg=svgLineChart([{data:serie.map(p=>({x:p.x,y:p.y*100})),color:"var(--accent)",minY:0,maxY:100}]);
+  return '<div class="block"><div class="bt">Completude dos treinos</div><div class="bc">Último treino: '+pct+'% dos exercícios concluídos</div>'+svg+'</div>';
+}
+
+function blocoRPE(h){
+  const serie=serieRPE(h,40);
+  if(serie.length<3) return '<div class="block"><div class="bt">Sensação de esforço (RPE)</div><div class="empty" style="padding:16px 0">Poucos registros de RPE ainda pra mostrar uma tendência.</div></div>';
+  const ultimo=serie[serie.length-1].y;
+  const svg=svgLineChart([{data:serie,color:"var(--accent2)",minY:0,maxY:10}]);
+  return '<div class="block"><div class="bt">Sensação de esforço (RPE)</div><div class="bc">Último RPE: '+ultimo+' — '+esc(RPE_DESC[ultimo]||"")+'</div>'+svg+'</div>';
+}
+
+function blocoCarga(h,tend){
+  const {brutos,suavizada}=serieCarga(h,40);
+  if(brutos.length<3) return '<div class="block"><div class="bt">Carga de treino</div><div class="empty" style="padding:16px 0">Poucos registros de carga ainda pra mostrar uma tendência.</div></div>';
+  const svg=svgLineChart([{data:brutos,color:"var(--accent2)",dashed:true},{data:suavizada,color:"var(--accent)"}]);
+  const tendTxt = tend.direcao==="sem_dados" ? "" :
+    ' · tendência: '+(tend.direcao==="subindo"?"↑ subindo":tend.direcao==="descendo"?"↓ descendo":"→ estável")+' ('+(tend.deltaPct>=0?"+":"")+Math.round(tend.deltaPct)+"%)";
+  return '<div class="block"><div class="bt">Carga de treino</div><div class="bc">Carga = duração (min) × esforço (RPE)'+tendTxt+'</div>'+svg
+    +'<div class="chartlegend"><span><i style="background:var(--accent2)"></i>Bruta</span><span><i style="background:var(--accent)"></i>Média móvel</span></div></div>';
+}
+
+function blocoEsforcoVsCarga(h){
+  const s=serieEsforcoVsCarga(h,40);
+  if(!s || s.rpe.length<3) return '<div class="block"><div class="bt">Esforço vs. carga</div><div class="empty" style="padding:16px 0">Poucos registros pareados ainda.</div></div>';
+  const svg=svgLineChart([{data:s.rpe,color:"var(--accent2)",minY:0,maxY:10},{data:s.cargaNorm,color:"var(--warn)",minY:0,maxY:10}]);
+  return '<div class="block"><div class="bt">Esforço vs. carga</div>'+svg
+    +'<div class="chartlegend"><span><i style="background:var(--accent2)"></i>Esforço (RPE)</span><span><i style="background:var(--warn)"></i>Carga (normalizada)</span></div>'
+    +'<div class="bc" style="margin-top:8px">Carga = duração × esforço — se a carga sobe mais que o esforço, o treino está durando mais; se sobe junto, é o esforço que está puxando.</div></div>';
+}
+
+function blocoComparacao(h){
+  const geral=compararGeral(h,5), exs=compararExercicios(h,{minPontos:2});
+  if(!geral && !exs.length) return '<div class="block"><div class="bt">Comparação com os primeiros treinos</div><div class="empty" style="padding:16px 0">Ainda não há treinos suficientes pra comparar.</div></div>';
+  let html='<div class="block"><div class="bt">Comparação com os primeiros treinos</div>';
+  if(geral){
+    const fmtMin=ms=>ms!=null?Math.round(ms/60000)+" min":"—";
+    const fmtPct=v=>v!=null?Math.round(v*100)+"%":"—";
+    const fmtRpe=v=>v!=null?v.toFixed(1):"—";
+    html+='<table class="cmptable">'
+      +'<tr><td>Duração média</td><td>'+fmtMin(geral.duracao.antes)+' → '+fmtMin(geral.duracao.depois)+'</td></tr>'
+      +'<tr><td>Completude média</td><td>'+fmtPct(geral.completude.antes)+' → '+fmtPct(geral.completude.depois)+'</td></tr>'
+      +'<tr><td>RPE médio</td><td>'+fmtRpe(geral.rpe.antes)+' → '+fmtRpe(geral.rpe.depois)+'</td></tr>'
+      +'</table><div class="bc" style="margin-top:6px">Primeiras '+geral.n+' sessões vs. últimas '+geral.n+'</div>';
+  }
+  if(exs.length){
+    html+='<div class="exlist" style="margin-top:12px">'+exs.map(e=>{
+      const cls=e.deltaPct>0?"up":e.deltaPct<0?"down":"";
+      return '<div class="exrow"><div>'+esc(e.nome)+'</div><div class="exd '+cls+'">'+e.antes.toFixed(1)+' → '+e.depois.toFixed(1)+' '+esc(e.unidade)+' ('+(e.deltaPct>0?"+":"")+Math.round(e.deltaPct)+'%)</div></div>';
+    }).join("")+'</div>';
+  }
+  return html+'</div>';
+}
+
+function renderDashboard(){
+  const h=hist();
+  document.getElementById("dashSub").textContent = h.length ? h.length+" treino"+(h.length===1?"":"s")+" registrado"+(h.length===1?"":"s")+" no total" : "";
+  if(!h.length){
+    document.getElementById("dashKPIs").innerHTML="";
+    document.getElementById("dashLongitudinal").innerHTML='<div class="empty">Ainda não há treinos registrados.<br>Complete seu primeiro treino para começar a ver seus indicadores aqui.</div>';
+    return;
+  }
+  document.getElementById("dashKPIs").innerHTML=renderKPIGrid(kpisExecutivos(h));
+  const temRPE=h.some(s=>s.rpe!=null);
+  let sec=blocoAssiduidade(calcularAssiduidade(h))+blocoCompletude(h);
+  if(temRPE){
+    sec += blocoRPE(h)+blocoCarga(h,tendenciaCarga(h))+blocoEsforcoVsCarga(h);
+  } else {
+    sec += '<div class="banner">Você ainda não tem registros de esforço (RPE). A partir do próximo treino finalizado, essas seções passam a mostrar dados.</div>';
+  }
+  sec += blocoComparacao(h);
+  document.getElementById("dashLongitudinal").innerHTML=sec;
+}
+
+/* =========================================================
    SESSÃO
    ========================================================= */
 /* Lista achatada das etapas do dia, na ordem: aquecimento → exercícios → mobilidade.
@@ -526,6 +875,18 @@ function backHome(){
   document.getElementById("view-home").classList.remove("hidden");
   document.getElementById("timerBar").classList.add("hidden");
   window.scrollTo(0,0); renderHome();
+}
+
+function abrirDashboard(){
+  document.getElementById("view-home").classList.add("hidden");
+  document.getElementById("view-dashboard").classList.remove("hidden");
+  renderDashboard();
+  window.scrollTo(0,0);
+}
+function fecharDashboard(){
+  document.getElementById("view-dashboard").classList.add("hidden");
+  document.getElementById("view-home").classList.remove("hidden");
+  window.scrollTo(0,0);
 }
 
 function openSession(){
